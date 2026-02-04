@@ -5,11 +5,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 export 'chip_list_maker.dart';
 
 class ChipList extends StatefulWidget {
-  const ChipList({required this.controller, this.layout, super.key});
+  const ChipList({required this.controller, super.key});
 
   final ChipListController controller;
-  final ChipLayout? layout;
-
   @override
   State<ChipList> createState() => _ChipListState();
 }
@@ -22,8 +20,8 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
   double _initX = 0;
   double _initY = 0;
 
-  late double _popupWidth;
-  late double _popupHeight;
+  double _popupWidth = 0;
+  double _popupHeight = 0;
 
   @override
   void dispose() {
@@ -55,9 +53,7 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
 
   @override
   Widget build(BuildContext context) {
-    return widget.layout == ChipLayout.layout2
-        ? _buildLayout2()
-        : _buildLayout1();
+    return _buildLayout1();
   }
 
   Widget _buildLayout1() {
@@ -153,220 +149,216 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     );
   }
 
-  Widget _buildLayout2() {
-    final hasValue = widget.controller.selectedItems.isNotEmpty;
-
-    return Opacity(
-      opacity: widget.controller.disable ? 0.5 : 1.0,
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: Container(
-          key: _inputChipKey,
-          margin: const EdgeInsets.only(bottom: 4.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Material(
-            borderRadius: BorderRadius.circular(8),
-            color: widget.controller.disable
-                ? Colors.grey.shade300
-                : widget.controller.backgroundColor,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: widget.controller.disable
-                  ? null
-                  : () => _showOverlayPopup2(context),
-              child: IntrinsicWidth(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 150,
-                    maxWidth: 300,
-                  ),
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText:
-                          (widget.controller.updating ||
-                                  widget.controller.hasValue()) &&
-                              !widget.controller.hideLabelIfNotEmpty
-                          ? widget.controller.label
-                          : null,
-                      labelStyle: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: widget.controller.backgroundColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: hasValue
-                              ? Colors.blue.shade400
-                              : Colors.grey.shade300,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade400),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: hasValue
-                                ? Colors.blue.shade50
-                                : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.list,
-                            size: 18,
-                            color: hasValue
-                                ? Colors.blue.shade600
-                                : Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              hasValue
-                                  ? _displayCompactSelection()
-                                  : Text(
-                                      widget.controller.label,
-                                      style: widget.controller.emptyLabelStyle
-                                          .copyWith(
-                                            color: Colors.grey.shade600,
-                                          ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                        if (widget.controller.displayRemoveButton &&
-                            hasValue) ...[
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: widget.controller.disable
-                                ? null
-                                : () => widget.controller.clean(),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                Icons.clear,
-                                size: 16,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ),
-                        ] else if (!widget.controller.alwaysDisplayed) ...[
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: widget.controller.disable
-                                ? null
-                                : () => onRemove(),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade100,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.close,
-                                size: 16,
-                                color: Colors.red.shade600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  List<Widget> _sanitizeChildren(List<Widget> children) {
+    return children.map((child) {
+      if (child is Spacer) {
+        return const SizedBox(width: 4);
+      }
+      if (child is Flexible) {
+        return child.child;
+      }
+      return child;
+    }).toList();
   }
 
-  Widget _displayCompactSelection() {
-    return Wrap(
-      spacing: 2.0,
-      runSpacing: 2.0,
-      children:
-          widget.controller.selectedItems
-              .take(3) // Show max 3 items
-              .map(
-                (item) => Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
+  Widget _displayResume({
+    required ChipListDisplayMode mode,
+    bool isHover = false,
+  }) {
+    List<Widget> items = [];
+    if ((mode == ChipListDisplayMode.quantity ||
+            widget.controller.selectedItems.length >
+                widget.controller.displayModeStepQty) &&
+        isHover == false) {
+      return Text(
+        "# ${widget.controller.selectedItems.length}",
+        style: widget.controller.textStyle,
+      );
+    } else if (mode == ChipListDisplayMode.shortDescription) {
+      items = widget.controller.selectedItems
+          .map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: Text(
+                item.shortText ?? item.text,
+                style: widget.controller.textStyle,
+              ),
+            ),
+          )
+          .toList();
+      return isHover
+          ? GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.controller.gridCols,
+                childAspectRatio: widget.controller.gridAspectRatio,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  color: gridBgColor(index),
+                  child: Align(
+                    alignment: widget.controller.gridAlign,
+                    child: items[index],
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade100,
-                    borderRadius: BorderRadius.circular(8),
+                );
+              },
+            )
+          : Wrap(spacing: 4, runSpacing: 4, children: items);
+    } else if (mode == ChipListDisplayMode.fullDescription) {
+      items = widget.controller.selectedItems
+          .map(
+            (item) => item.children == null
+                ? Text(item.text, style: widget.controller.textStyle)
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: _sanitizeChildren(item.children!),
                   ),
-                  child: Text(
-                    item.shortText ?? item.text,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blue.shade700,
+          )
+          .toList();
+      return isHover
+          ? GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.controller.gridCols,
+                childAspectRatio: widget.controller.gridAspectRatio,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  color: gridBgColor(index),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Align(
+                      alignment: widget.controller.gridAlign,
+                      child: items[index],
                     ),
                   ),
-                ),
-              )
-              .toList()
-            ..addAll(
-              widget.controller.selectedItems.length > 3
-                  ? [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '+${widget.controller.selectedItems.length - 3}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
+                );
+              },
+            ) //Wrap(direction: Axis.vertical, spacing: 0, children: items)
+          : Wrap(spacing: 4, children: items);
+    } else if (mode == ChipListDisplayMode.icon) {
+      items = widget.controller.selectedItems
+          .map((item) => item.leading ?? const Icon(Icons.question_mark))
+          .toList();
+      return isHover
+          ? GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.controller.gridCols,
+                childAspectRatio: widget.controller.gridAspectRatio,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  color: gridBgColor(index),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Align(
+                        alignment: widget.controller.gridAlign,
+                        child: items[index],
                       ),
-                    ]
-                  : [],
+                    ),
+                  ),
+                );
+              },
+            )
+          : Wrap(spacing: 4, runSpacing: 4, children: items);
+    } else if (mode == ChipListDisplayMode.iconAndShortDescription) {
+      items = widget.controller.selectedItems
+          .map(
+            (item) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                item.leading ?? const Icon(Icons.question_mark),
+                Text(item.shortText ?? item.text),
+
+                const SizedBox(width: 4),
+              ],
             ),
-    );
+          )
+          .toList();
+      return isHover
+          ? GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.controller.gridCols,
+                childAspectRatio: widget.controller.gridAspectRatio,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  color: gridBgColor(index),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Align(
+                      alignment: widget.controller.gridAlign,
+                      child: items[index],
+                    ),
+                  ),
+                );
+              },
+            )
+          : Wrap(spacing: 4, runSpacing: 4, children: items);
+    } else if (mode == ChipListDisplayMode.iconAndDescription) {
+      items = widget.controller.selectedItems
+          .map(
+            (item) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                item.leading ?? const Icon(Icons.question_mark),
+                item.children == null
+                    ? Text(item.text, style: widget.controller.textStyle)
+                    : Row(children: _sanitizeChildren(item.children!)),
+                const SizedBox(width: 4),
+              ],
+            ),
+          )
+          .toList();
+      return isHover
+          ? GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.controller.gridCols,
+                childAspectRatio: widget.controller.gridAspectRatio,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  color: gridBgColor(index),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Align(
+                      alignment: widget.controller.gridAlign,
+                      child: items[index],
+                    ),
+                  ),
+                );
+              },
+            )
+          : Wrap(spacing: 4, runSpacing: 4, children: items);
+    }
+    return const SizedBox.shrink();
   }
+
+  Widget _buildActionButtons() => tailIcons(
+    widget.controller,
+    onErase: widget.controller.disable
+        ? null
+        : () {
+            widget.controller.clean();
+            _refresh();
+          },
+    onDelete: widget.controller.disable
+        ? null
+        : () {
+            onRemove();
+            _refresh();
+          },
+  );
 
   void _showOverlayPopup(BuildContext context) {
     _overlayEntryPopup?.remove();
@@ -415,508 +407,6 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
             ),
           ],
         ),
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntryPopup!);
-  }
-
-  void _showOverlayPopup2(BuildContext context) {
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup = null;
-
-    _closeOverlayHover();
-    _getInputChipPosition();
-    widget.controller.updating = true;
-
-    _overlayEntryPopup = OverlayEntry(
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          // Get screen dimensions
-          final screenSize = MediaQuery.of(context).size;
-          final padding = MediaQuery.of(context).padding;
-
-          // Calculate popup dimensions (reasonable max sizes)
-          final maxWidth = screenSize.width * 0.8; // 80% of screen width
-          final maxHeight = screenSize.height * 0.7; // 70% of screen height
-
-          final popupWidth = (_popupWidth * 1.8).clamp(350.0, maxWidth);
-          final popupHeight = _popupHeight.clamp(300.0, maxHeight);
-
-          // Get chip position with safe defaults
-          final chipX = widget.controller.chipX ?? 0.0;
-          final chipY = widget.controller.chipY ?? 0.0;
-          final chipHeight = widget.controller.chipHeight ?? 48.0;
-
-          // Preferred position (below the chip, following original behavior)
-          double popupX = chipX + widget.controller.popupXoffset;
-          double popupY = chipY + chipHeight;
-
-          // Check and adjust X position only if needed
-          if (popupX + popupWidth > screenSize.width - 16) {
-            // Position to fit within right edge
-            popupX = screenSize.width - popupWidth - 16;
-          }
-          if (popupX < 16) {
-            // Position to fit within left edge
-            popupX = 16;
-          }
-
-          // Check and adjust Y position only if needed
-          if (popupY + popupHeight > screenSize.height - padding.bottom - 16) {
-            // Try positioning above the chip first
-            final popupYAbove = chipY - popupHeight - 8; // 8px gap above chip
-            if (popupYAbove >= padding.top + 16) {
-              popupY = popupYAbove;
-            } else {
-              // If doesn't fit above, position at bottom with max available space
-              popupY = screenSize.height - padding.bottom - popupHeight - 16;
-            }
-          }
-
-          // Ensure minimum top position
-          if (popupY < padding.top + 16) {
-            popupY = padding.top + 16;
-          }
-
-          // Create ScrollController for the Scrollbar
-          final scrollController = ScrollController();
-
-          return Stack(
-            children: [
-              GestureDetector(
-                onTap: _closeOverlayPopup,
-                child: Container(color: Colors.black.withValues(alpha: 0.3)),
-              ),
-              Positioned(
-                left: popupX,
-                top: popupY,
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    width: popupWidth,
-                    height: popupHeight,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.15),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        // Main content in a Column
-                        Column(
-                          children: [
-                            // En-tête moderne
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.shade50,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Icon(
-                                      Icons.list,
-                                      color: Colors.blue.shade600,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      widget.controller.label,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.grey.shade800,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  if (widget.controller.multiSelect) ...[
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.shade100,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        "${widget.controller.selectedItems.length} / ${widget.controller.dataset.length}",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.blue.shade700,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  const SizedBox(width: 8),
-                                  IconButton(
-                                    onPressed: _closeOverlayPopup,
-                                    icon: Icon(
-                                      Icons.close_rounded,
-                                      color: Colors.grey.shade600,
-                                      size: 20,
-                                    ),
-                                    //tooltip: "Fermer",
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: const EdgeInsets.all(8),
-                                      minimumSize: const Size(32, 32),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Liste des éléments avec ScrollController
-                            Expanded(
-                              child: Scrollbar(
-                                controller: scrollController,
-                                thumbVisibility: true,
-                                trackVisibility: true,
-                                child: ListView.builder(
-                                  controller: scrollController,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                  itemCount: widget.controller.dataset.length,
-                                  itemBuilder: (context, index) {
-                                    final item =
-                                        widget.controller.dataset[index];
-                                    final isSelected = widget
-                                        .controller
-                                        .selectedItems
-                                        .contains(item);
-
-                                    return Container(
-                                      margin: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Colors.blue.shade50
-                                            : (index % 2 == 0
-                                                  ? Colors.white
-                                                  : Colors.grey.shade50),
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: isSelected
-                                            ? Border.all(
-                                                color: Colors.blue.shade200,
-                                              )
-                                            : null,
-                                      ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              if (widget
-                                                      .controller
-                                                      .multiSelect ==
-                                                  false) {
-                                                widget.controller.selectedItems
-                                                    .removeWhere((element) {
-                                                      return element != item;
-                                                    });
-                                              }
-
-                                              if (isSelected) {
-                                                widget.controller.selectedItems
-                                                    .remove(item);
-                                              } else {
-                                                widget.controller.selectedItems
-                                                    .add(item);
-                                              }
-                                            });
-
-                                            if (mounted) {
-                                              this.setState(() {});
-                                            }
-
-                                            if (widget
-                                                    .controller
-                                                    .quitOnSelect ==
-                                                true) {
-                                              _closeOverlayPopup();
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 12,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets.all(
-                                                    6,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? Colors.green.shade100
-                                                        : Colors.grey.shade100,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          6,
-                                                        ),
-                                                  ),
-                                                  child: Icon(
-                                                    isSelected
-                                                        ? Icons.check_circle
-                                                        : Icons
-                                                              .radio_button_unchecked,
-                                                    size: 16,
-                                                    color: isSelected
-                                                        ? Colors.green.shade600
-                                                        : Colors.grey.shade500,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                if (item.leading != null) ...[
-                                                  item.leading!,
-                                                  const SizedBox(width: 8),
-                                                ],
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        item.text,
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: isSelected
-                                                              ? Colors
-                                                                    .blue
-                                                                    .shade700
-                                                              : Colors
-                                                                    .grey
-                                                                    .shade800,
-                                                        ),
-                                                      ),
-                                                      if (item.comments != null)
-                                                        Text(
-                                                          item.comments!,
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors
-                                                                .grey
-                                                                .shade600,
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                if (isSelected)
-                                                  Icon(
-                                                    Icons.check,
-                                                    color:
-                                                        Colors.green.shade600,
-                                                    size: 18,
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-
-                            // Pied de page moderne
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(12),
-                                  bottomRight: Radius.circular(12),
-                                ),
-                                border: Border(
-                                  top: BorderSide(color: Colors.grey.shade200),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Flexible(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.shade100,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        "${widget.controller.selectedItems.length} sélectionné${widget.controller.selectedItems.length > 1 ? 's' : ''}",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.blue.shade700,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  if (widget.controller.multiSelect) ...[
-                                    if (widget
-                                            .controller
-                                            .selectedItems
-                                            .length ==
-                                        widget.controller.dataset.length)
-                                      IconButton.outlined(
-                                        onPressed: () {
-                                          setState(() {
-                                            widget.controller.selectedItems
-                                                .clear();
-                                          });
-                                          if (mounted) {
-                                            this.setState(() {});
-                                          }
-                                        },
-                                        icon: const Icon(
-                                          Icons.remove_done,
-                                          size: 18,
-                                        ),
-                                        //tooltip: "Désélectionner tout",
-                                        style: IconButton.styleFrom(
-                                          backgroundColor:
-                                              Colors.orange.shade50,
-                                          foregroundColor:
-                                              Colors.orange.shade600,
-                                          side: BorderSide(
-                                            color: Colors.orange.shade200,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      IconButton.outlined(
-                                        onPressed: () {
-                                          setState(() {
-                                            widget.controller.selectedItems =
-                                                List.from(
-                                                  widget.controller.dataset,
-                                                );
-                                          });
-                                          if (mounted) {
-                                            this.setState(() {});
-                                          }
-                                        },
-                                        icon: const Icon(
-                                          Icons.done_all,
-                                          size: 18,
-                                        ),
-                                        //tooltip: "Tout sélectionner",
-                                        style: IconButton.styleFrom(
-                                          backgroundColor: Colors.green.shade50,
-                                          foregroundColor:
-                                              Colors.green.shade600,
-                                          side: BorderSide(
-                                            color: Colors.green.shade200,
-                                          ),
-                                        ),
-                                      ),
-                                    const SizedBox(width: 8),
-                                  ],
-                                  IconButton.filled(
-                                    onPressed: _closeOverlayPopup,
-                                    icon: const Icon(Icons.check, size: 18),
-                                    tooltip: "Valider",
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.blue.shade500,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Poignée de redimensionnement
-                        Positioned(
-                          right: 4,
-                          bottom: 4,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.resizeDownRight,
-                            child: GestureDetector(
-                              onPanStart: (details) {
-                                _initX = details.globalPosition.dx;
-                                _initY = details.globalPosition.dy;
-                              },
-                              onPanUpdate: (details) {
-                                setState(() {
-                                  _popupWidth +=
-                                      details.globalPosition.dx - _initX;
-                                  _popupHeight +=
-                                      details.globalPosition.dy - _initY;
-                                  _initX = details.globalPosition.dx;
-                                  _initY = details.globalPosition.dy;
-
-                                  _popupWidth = _popupWidth.clamp(
-                                    widget.controller.popupMinWidth,
-                                    widget.controller.popupMaxWidth,
-                                  );
-                                  _popupHeight = _popupHeight.clamp(
-                                    widget.controller.popupMinHeight,
-                                    widget.controller.popupMaxHeight,
-                                  );
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                child: Icon(
-                                  Icons.drag_handle,
-                                  color: Colors.grey.shade400,
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
       ),
     );
 
@@ -1205,7 +695,7 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     }
   }
 
-  List<Widget> _sanitizeChildren(List<Widget> children) {
+  List<Widget> sanitizeChildren(List<Widget> children) {
     return children.map((child) {
       if (child is Spacer) {
         return const SizedBox(width: 4);
@@ -1217,7 +707,7 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     }).toList();
   }
 
-  Widget _displayResume({
+  Widget displayResume({
     required ChipListDisplayMode mode,
     bool isHover = false,
   }) {
@@ -1268,7 +758,7 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
                 ? Text(item.text, style: widget.controller.textStyle)
                 : Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: _sanitizeChildren(item.children!),
+                    children: sanitizeChildren(item.children!),
                   ),
           )
           .toList();
@@ -1368,7 +858,7 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
                 item.leading ?? const Icon(Icons.question_mark),
                 item.children == null
                     ? Text(item.text, style: widget.controller.textStyle)
-                    : Row(children: _sanitizeChildren(item.children!)),
+                    : Row(children: sanitizeChildren(item.children!)),
                 const SizedBox(width: 4),
               ],
             ),
@@ -1400,7 +890,7 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     return const SizedBox.shrink();
   }
 
-  Widget _buildActionButtons() => tailIcons(
+  Widget buildActionButtons() => tailIcons(
     widget.controller,
     onErase: widget.controller.disable
         ? null

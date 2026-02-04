@@ -38,7 +38,6 @@ class ChipsCriteria extends StatefulWidget {
     this.chipDisplayMode = const [],
     this.groupsFilterDisplay,
     this.groupsFilterSelector,
-    this.chipLayout,
     this.showEraseAllButton = true,
     @Deprecated(
       'Use showEraseAllButton instead. This parameter will be removed in a future version.',
@@ -51,7 +50,7 @@ class ChipsCriteria extends StatefulWidget {
   final List<ChipDisplayMode> chipDisplayMode;
   final List<ChipGroup>? groupsFilterDisplay;
   final List<ChipGroup>? groupsFilterSelector;
-  final ChipLayout? chipLayout;
+
   final bool showEraseAllButton;
 
   @Deprecated(
@@ -141,7 +140,6 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
       body = ChipAdd(
         controller: widget.chipsListControllers,
         groupsFilterSelector: widget.groupsFilterSelector,
-        layout: widget.chipLayout,
       );
     } else if (widget.chipDisplayMode.contains(ChipDisplayMode.criteriaOnly)) {
       body = _wdWrapListCriteria();
@@ -156,10 +154,8 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                     body = ChipAdd(
                       controller: widget.chipsListControllers,
                       groupsFilterSelector: widget.groupsFilterSelector,
-                      layout: widget.chipLayout,
                     ),
-                    if ((widget.showRefreshButton ??
-                            widget.showEraseAllButton) &&
+                    if (widget.showEraseAllButton &&
                         _wrapHeight > 80 &&
                         _chips.where((e) => e.hasValue()).isNotEmpty)
                       Container(
@@ -168,7 +164,7 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -222,7 +218,6 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                       //key: const Key("chip_add"),
                       controller: widget.chipsListControllers,
                       groupsFilterSelector: widget.groupsFilterSelector,
-                      layout: widget.chipLayout,
                     ),
                     _separatorAndHelper(),
                   ],
@@ -259,19 +254,19 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
     return _chips.map<Widget>((e) {
       switch (e) {
         case ChipTextController():
-          return ChipText(controller: e, layout: widget.chipLayout);
+          return ChipText(controller: e);
         case ChipListController():
-          return ChipList(controller: e, layout: widget.chipLayout);
+          return ChipList(controller: e);
         case ChipDatesRangeController():
-          return ChipDatesRange(controller: e, layout: widget.chipLayout);
+          return ChipDatesRange(controller: e);
         case ChipDateController():
-          return ChipDate(controller: e, layout: widget.chipLayout);
+          return ChipDate(controller: e);
         case ChipBooleanController():
-          return ChipBoolean(controller: e, layout: widget.chipLayout);
+          return ChipBoolean(controller: e);
         case ChipTextCompletionController<SearchEntry>():
-          return ChipTextCompletion(controller: e, layout: widget.chipLayout);
+          return ChipTextCompletion(controller: e);
         case ChipRangeController():
-          return ChipRange(controller: e, layout: widget.chipLayout);
+          return ChipRange(controller: e);
 
         default:
           if (kDebugMode) {

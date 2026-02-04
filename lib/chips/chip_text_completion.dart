@@ -64,10 +64,9 @@ class CacheManager<T> {
 }
 
 class ChipTextCompletion extends StatefulWidget {
-  const ChipTextCompletion({required this.controller, this.layout, super.key});
+  const ChipTextCompletion({required this.controller, super.key});
 
   final ChipTextCompletionController controller;
-  final ChipLayout? layout;
 
   @override
   State<ChipTextCompletion> createState() => _ChipTextCompletionState();
@@ -617,11 +616,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.layout == ChipLayout.layout2) {
-      return _buildLayout2();
-    } else {
-      return _buildLayout1();
-    }
+    return _buildLayout1();
   }
 
   Widget _buildLayout1() {
@@ -690,7 +685,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),

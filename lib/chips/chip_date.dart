@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ChipDate extends StatefulWidget {
-  const ChipDate({required this.controller, this.layout, super.key});
+  const ChipDate({required this.controller, super.key});
 
   final ChipDateController controller;
-  final ChipLayout? layout;
-
   @override
   State<ChipDate> createState() => _ChipDateState();
 }
@@ -54,11 +52,7 @@ class _ChipDateState extends State<ChipDate> with ChipsAssets {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.layout == ChipLayout.layout2) {
-      return _buildLayout2();
-    } else {
-      return _buildLayout1();
-    }
+    return _buildLayout1();
   }
 
   Widget _buildLayout1() {
@@ -181,7 +175,7 @@ class _ChipDateState extends State<ChipDate> with ChipsAssets {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 bool? desktopMode; // = true;
 
-enum ChipLayout { layout1, layout2 }
+//enum ChipLayout { layout1, layout2 }
 
 class ModernStyle {
   static const double cornerRadius = 16.0;

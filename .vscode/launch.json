@@ -15,13 +15,6 @@
             "cwd": "examples/example1",
             "request": "launch",
             "type": "dart"
-        },
-        {
-            "name": "Showcase layout 2",
-            "type": "dart",
-            "request": "launch",
-            "cwd": "examples/showcase2",
-            "program": "lib/main.dart"
         }
     ]
 }

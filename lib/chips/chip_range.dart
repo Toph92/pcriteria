@@ -8,11 +8,9 @@ export 'package:flutter/services.dart';
 export 'chip_list_maker.dart';
 
 class ChipRange extends StatefulWidget {
-  const ChipRange({required this.controller, this.layout, super.key});
+  const ChipRange({required this.controller, super.key});
 
   final ChipRangeController controller;
-  final ChipLayout? layout;
-
   @override
   State<ChipRange> createState() => _ChipRangeState();
 }
@@ -58,9 +56,7 @@ class _ChipRangeState extends State<ChipRange> with ChipsAssets {
 
   @override
   Widget build(BuildContext context) {
-    return widget.layout == ChipLayout.layout2
-        ? _buildLayout2()
-        : _buildLayout1();
+    return _buildLayout1();
   }
 
   Widget _buildLayout1() {
@@ -203,211 +199,6 @@ class _ChipRangeState extends State<ChipRange> with ChipsAssets {
       );
     }
     return const SizedBox.shrink();
-  }
-
-  Widget _buildLayout2() {
-    return Opacity(
-      opacity: widget.controller.disable ? 0.5 : 1.0,
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: Container(
-          key: _inputChipKey,
-          margin: const EdgeInsets.only(bottom: 4.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Material(
-            borderRadius: BorderRadius.circular(8),
-            color: widget.controller.disable
-                ? Colors.grey.shade300
-                : widget.controller.backgroundColor,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: widget.controller.disable
-                  ? null
-                  : () {
-                      _getInputChipPosition();
-                      widget.controller.updating = true;
-                      _showOverlayPopup2(context);
-                    },
-              child: IntrinsicWidth(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 120,
-                    maxWidth: 250,
-                  ),
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText:
-                          (widget.controller.updating ||
-                                  widget.controller.hasValue()) &&
-                              !widget.controller.hideLabelIfNotEmpty
-                          ? widget.controller.label
-                          : null,
-                      labelStyle: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: widget.controller.backgroundColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: widget.controller.numRange != null
-                              ? Colors.blue.shade400
-                              : Colors.grey.shade300,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blue.shade400),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: widget.controller.numRange != null
-                                ? Colors.blue.shade50
-                                : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.tune,
-                            size: 18,
-                            color: widget.controller.numRange != null
-                                ? Colors.blue.shade600
-                                : Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              widget.controller.numRange != null
-                                  ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          widget.controller.numRange!.start
-                                              .toStringAsFixed(
-                                                widget.controller.precision,
-                                              ),
-                                          style: widget.controller.textStyle
-                                              .copyWith(
-                                                color: Colors.blue.shade700,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                          ),
-                                          child: Icon(
-                                            Icons.arrow_forward,
-                                            color: Colors.grey.shade500,
-                                            size: 16,
-                                          ),
-                                        ),
-                                        Text(
-                                          widget.controller.numRange!.end
-                                              .toStringAsFixed(
-                                                widget.controller.precision,
-                                              ),
-                                          style: widget.controller.textStyle
-                                              .copyWith(
-                                                color: Colors.blue.shade700,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                        if (widget.controller.unitWidget !=
-                                            null) ...[
-                                          const SizedBox(width: 4),
-                                          widget.controller.unitWidget!,
-                                        ],
-                                      ],
-                                    )
-                                  : Text(
-                                      widget.controller.label,
-                                      style: widget.controller.emptyLabelStyle
-                                          .copyWith(
-                                            color: Colors.grey.shade600,
-                                          ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                        // Respect controller-wide displayRemoveButton and local removeButton
-                        if (widget.controller.displayRemoveButton &&
-                            widget.controller.removeButton &&
-                            widget.controller.numRange != null) ...[
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: widget.controller.disable
-                                ? null
-                                : () => widget.controller.clean(),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Icon(
-                                Icons.clear,
-                                size: 16,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ),
-                        ] else if (!widget.controller.alwaysDisplayed) ...[
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: widget.controller.disable
-                                ? null
-                                : () => onRemove(),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade100,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.close,
-                                size: 16,
-                                color: Colors.red.shade600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   void _showOverlayPopup(BuildContext context) {

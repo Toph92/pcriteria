@@ -114,7 +114,7 @@ abstract class ChipItemController with ChangeNotifier {
   bool disable = false;
 
   TextStyle labelStyle = TextStyle(
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: FontWeight.w600,
     color: Colors.grey.shade600,
   );
@@ -266,10 +266,11 @@ class ChipsController with ChipsPoupAttributs, ChangeNotifier {
     Map<String, int> map = {};
     _chips = newChips;
     for (final chip in chips) {
-      chip.addListener(notifyListeners);
-      chip.parentOnEnter = onEnter;
+      chip
+        ..addListener(notifyListeners)
+        ..parentOnEnter = onEnter;
       assert(map[chip.name] == null, "Duplicate chip name: ${chip.name}");
-      map[chip.name] = map[chip.name] ?? 0 + 1;
+      map[chip.name] = (map[chip.name] ?? 0) + 1;
     }
     notifyListeners();
   }

@@ -151,8 +151,7 @@ mixin class CommonPages {
               ),
             ),
           )
-          ..hideLabelIfNotEmpty =
-              false // TODO utile ?
+          ..hideLabelIfNotEmpty = false
           ..popupHelper = const Padding(
             padding: EdgeInsets.only(top: 4),
             child: Row(
@@ -205,7 +204,7 @@ mixin class CommonPages {
             size: 24,
           )
           ..labelStyle = const TextStyle(
-            fontSize: 10,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.green,
           ),
