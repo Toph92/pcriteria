@@ -1,5 +1,4 @@
 import 'package:criteria/chips/chip_controllers.dart';
-import 'package:criteria/chips/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 export 'chip_list_maker.dart';

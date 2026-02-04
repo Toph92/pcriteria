@@ -1,5 +1,4 @@
 import 'package:criteria/chips/chip_list.dart';
-import 'package:criteria/chips/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:toolbox/toolbox.dart';

@@ -1,6 +1,5 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:criteria/chips/chip_controllers.dart';
-import 'package:criteria/chips/config.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

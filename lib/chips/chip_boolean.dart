@@ -1,5 +1,4 @@
 import 'package:criteria/chips/chip_controllers.dart';
-import 'package:criteria/chips/config.dart';
 import 'package:flutter/material.dart';
 
 class ChipBoolean extends StatefulWidget {
