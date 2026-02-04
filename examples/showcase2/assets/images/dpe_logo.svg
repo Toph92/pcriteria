@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="61.16mm" height="60.66mm" viewBox="0 0 61.16 60.66" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(-0.61,-0.48)">
+    <!-- Bandes DPE -->
+    <path d="M 0.61,0.48 H 11.74 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#03772c"/>
+    <path d="M 0.61,9.27 H 18.35 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#2ba342"/>
+    <path d="M 0.61,18.05 H 24.97 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#cdd301"/>
+    <path d="M 0.61,26.84 H 31.58 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#f6e801"/>
+    <path d="M 0.61,35.63 H 38.20 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#fac813"/>
+    <path d="M 0.61,44.42 H 44.81 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#e89900"/>
+    <path d="M 0.61,53.20 H 51.43 l 4.22,3.97 -4.22,3.97 H 0.61 Z" fill="#e32f2e"/>
+
+    <!-- Labels A-G -->
+    <text x="7.98" y="6.76" style="font-size:6.35px;font-family:monospace;font-weight:bold;fill:#ffffff">A</text>
+    <text x="14.74" y="15.55" style="font-size:6.35px;font-family:monospace;font-weight:bold">B</text>
+    <text x="21.59" y="24.33" style="font-size:6.35px;font-family:monospace;font-weight:bold">C</text>
+    <text x="28.01" y="33.12" style="font-size:6.35px;font-family:monospace;font-weight:bold">D</text>
+    <text x="34.79" y="41.91" style="font-size:6.35px;font-family:monospace;font-weight:bold">E</text>
+    <text x="41.36" y="50.63" style="font-size:6.35px;font-family:monospace;font-weight:bold">F</text>
+    <text x="47.86" y="59.48" style="font-size:6.35px;font-family:monospace;font-weight:bold">G</text>
+  </g>
+</svg>

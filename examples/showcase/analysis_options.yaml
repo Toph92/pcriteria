@@ -1,0 +1,56 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  # The lint rules applied to this project can be customized in the
+  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
+  # included above or to enable additional rules. A list of all available lints
+  # and their documentation is published at https://dart.dev/lints.
+  #
+  # Instead of disabling a lint rule for the entire project in the
+  # section below, it can also be suppressed for a single line of code
+  # or a specific dart file by using the `// ignore: name_of_lint` and
+  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
+  # producing the lint.
+
+
+  rules:
+    - prefer_single_quotes: true
+    - always_use_package_imports
+    - directives_ordering
+    - unawaited_futures
+    - always_use_package_imports      
+    - always_declare_return_types # Obligatoire pour les méthodes et fonctions.
+    - always_put_required_named_parameters_first # Organise les paramètres nommés.    
+    #- avoid_print # Évite d'utiliser `print`, utilise un logger à la place.
+    - avoid_redundant_argument_values # Évite de passer des valeurs par défaut explicitement.
+    - avoid_relative_lib_imports # Interdit les imports relatifs depuis le dossier lib.
+    - camel_case_types # Imposition du camelCase pour les types.
+    - cascade_invocations # Favorise l'utilisation de l'opérateur de cascade (`..`) pour des appels successifs.
+    - directives_ordering # Organise les imports par type.
+    - empty_catches # Évite les blocs `catch` vides.
+    - hash_and_equals # Implique de surcharger `==` et `hashCode` ensemble.
+    - invariant_booleans # Détecte les expressions booléennes non constantes dans des endroits où une constante est requise.
+    - no_leading_underscores_for_local_identifiers # Évite les underscores en début de noms pour les variables locales.
+    - null_closures # Évite les closures nullables.
+    - prefer_collection_literals # Utilise des littéraux pour les collections.
+    - prefer_const_constructors # Préfère les constructeurs `const`.
+    - prefer_const_constructors_in_immutables # Force l'utilisation de `const` dans les classes immutables.
+    - prefer_const_declarations # Préfère les déclarations `const` lorsque possible.
+    - prefer_final_fields # Préfère les champs `final` pour les variables non modifiées.
+    - prefer_final_in_for_each # Utilise `final` dans les boucles `for`.
+    - prefer_generic_function_type_aliases # Utilise des alias de types fonctionnels.    
+    - provide_deprecation_message # Ajoute un message avec les annotations `@deprecated`.
+    - sort_constructors_first # Place les constructeurs en premier.
+    - test_types_in_equals # Vérifie les types avant d'utiliser `==`.
+    - type_annotate_public_apis # Exige des annotations de type pour les APIs publiques.
+    - unnecessary_this # Supprime les utilisations inutiles de `this`.
+    - use_function_type_syntax_for_parameters # Utilise la syntaxe correcte pour les types fonctionnels.
