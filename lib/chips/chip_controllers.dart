@@ -73,6 +73,7 @@ abstract class ChipItemController with ChangeNotifier {
 
   /// Whether the chip can be removed/erased
   bool displayRemoveButton = true;
+  bool displayEraseButton = true;
 
   // for backward compatibility
   @Deprecated(
@@ -147,6 +148,10 @@ abstract class ChipItemController with ChangeNotifier {
     }
   }
 
+  Icon popupIcon = const Icon(Icons.search);
+  dynamic Function(BuildContext context, {dynamic other})? onPopupPressed;
+  String tooltipMessagePopup = "Open search popup";
+
   bool _popupDisplayed = false;
   bool get popupDisplayed => _popupDisplayed;
   set popupDisplayed(bool value) {
@@ -158,6 +163,11 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool hasValue();
   void clean();
+  void remove() {
+    clean();
+    displayed = false;
+  }
+
   dynamic get value;
   set value(dynamic newValue);
 
@@ -454,6 +464,7 @@ mixin ChipsAssets {
     }
     if (controller.hasValue()) {
       return IconButton(
+        padding: const EdgeInsets.all(4),
         icon: eraseIcon,
         tooltip: controller.tooltipMessageErase,
         onPressed: onErase,
@@ -462,6 +473,7 @@ mixin ChipsAssets {
     } else {
       if (!controller.alwaysDisplayed && controller.displayRemoveButton) {
         return IconButton(
+          padding: const EdgeInsets.all(4),
           icon: deleteIcon,
           tooltip: controller.tooltipMessageRemove,
           onPressed: onDelete,

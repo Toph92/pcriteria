@@ -26,12 +26,12 @@ mixin class CommonPages {
       ..chips = [
         ChipTextController(name: "compagny", group: gr1!, label: "Société")
           ..comments = "Raison sociale de la société"
-          ..avatar = const Icon(Icons.home, color: Colors.blue, size: 24)
-          ..labelStyle = const TextStyle(
+          ..avatar = const Icon(Icons.home, color: Colors.blue, size: 24),
+        /*..labelStyle = const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
             color: Colors.red,
-          ),
+          )*/
         ChipTextCompletionController<User>(
             name: "client",
             group: gr1!,

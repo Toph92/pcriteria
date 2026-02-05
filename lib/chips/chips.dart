@@ -245,7 +245,7 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
 
   Widget _wdWrapListCriteria() => Wrap(
     key: _wrapKey,
-    runSpacing: 2,
+    runSpacing: 6,
     spacing: 4,
     children: _listChips(), // Conversion explicite en liste
   );

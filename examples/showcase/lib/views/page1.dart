@@ -125,6 +125,62 @@ class _Page1State extends State<Page1> with CommonPages {
                     _disableFields();
                   },
                 ),
+                TitleBorderBox(
+                  title: "Exemples de code",
+                  icon: const Icon(Icons.code, color: Colors.red, size: 26),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PageCodeView(code: Codes.createView1),
+                            ),
+                          );
+                        },
+                        child: const Text("Création de cette vue"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PageCodeView(code: Codes.createList),
+                            ),
+                          );
+                        },
+                        child: const Text("Création de la liste des critères"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const PageCodeView(
+                                code: Codes.createListCountry,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text("Création de la liste des pays"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PageCodeView(code: Codes.createListDPE),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Création de la liste des étiquettes DPE",
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

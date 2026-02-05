@@ -1,4 +1,5 @@
 import 'package:criteria/chips/chip_controllers.dart';
+import 'package:criteria/chips/chip_decorator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 export 'chip_list_maker.dart';
@@ -11,7 +12,7 @@ class ChipList extends StatefulWidget {
   State<ChipList> createState() => _ChipListState();
 }
 
-class _ChipListState extends State<ChipList> with ChipsAssets {
+class _ChipListState extends State<ChipList> {
   final GlobalKey _inputChipKey = GlobalKey();
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntryPopup;
@@ -56,92 +57,35 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
   }
 
   Widget _buildLayout1() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2.0),
-      child: Opacity(
-        opacity: widget.controller.disable ? 0.5 : 1.0,
-        child: CompositedTransformTarget(
-          link: _layerLink,
-          child: MouseRegion(
-            onHover: (event) {
-              if (widget.controller.selectedItems.length >
-                  widget.controller.displayModeStepQty) {
-                _openOverlayHover();
-              }
-            },
-            onExit: (event) {
-              _closeOverlayHover();
-            },
-            child: Tooltip(
-              message: widget.controller.comments ?? '',
-              child: InkWell(
-                onTap: widget.controller.disable
-                    ? null
-                    : () {
-                        _showOverlayPopup(context);
-                      },
-                child: Container(
-                  key: _inputChipKey,
-                  constraints: BoxConstraints(minHeight: chipHeightSize + 2),
-                  padding: const EdgeInsets.all(0.0),
-                  decoration: BoxDecoration(
-                    color: widget.controller.disable
-                        ? Colors.grey.shade300
-                        : widget.controller.backgroundColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline,
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: MouseRegion(
+        onHover: (event) {
+          if (widget.controller.selectedItems.length >
+              widget.controller.displayModeStepQty) {
+            _openOverlayHover();
+          }
+        },
+        onExit: (event) {
+          _closeOverlayHover();
+        },
+        child: ChipDecorator(
+          key: _inputChipKey,
+          controller: widget.controller,
+          onTap: () {
+            _showOverlayPopup(context);
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              widget.controller.selectedItems.isNotEmpty
+                  ? _displayResume(mode: widget.controller.displayMode)
+                  : Text(
+                      '${widget.controller.label} ?',
+                      style: widget.controller.emptyLabelStyle,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Avatar/icône
-                      if (!widget.controller.hideAvatar &&
-                          widget.controller.avatar != null)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12, left: 6),
-                          child: widget.controller.avatar,
-                        ),
-
-                      // Contenu principal
-                      Flexible(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            widget.controller.selectedItems.isNotEmpty
-                                ? _displayResume(
-                                    mode: widget.controller.displayMode,
-                                  )
-                                : Text(
-                                    '${widget.controller.label} ?',
-                                    style: widget.controller.emptyLabelStyle,
-                                  ),
-
-                            // Label en bas si nécessaire
-                            if (widget.controller.hasValue() &&
-                                !widget.controller.hideLabelIfNotEmpty)
-                              IgnorePointer(
-                                child: Text(
-                                  widget.controller.label,
-                                  style: widget.controller.labelStyle.copyWith(
-                                    height: 0.8,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-
-                      // Boutons d'action
-                      const SizedBox(width: 8),
-                      _buildActionButtons(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            ],
           ),
         ),
       ),
@@ -342,22 +286,6 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     }
     return const SizedBox.shrink();
   }
-
-  Widget _buildActionButtons() => tailIcons(
-    widget.controller,
-    onErase: widget.controller.disable
-        ? null
-        : () {
-            widget.controller.clean();
-            _refresh();
-          },
-    onDelete: widget.controller.disable
-        ? null
-        : () {
-            onRemove();
-            _refresh();
-          },
-  );
 
   void _showOverlayPopup(BuildContext context) {
     _overlayEntryPopup?.remove();
@@ -674,13 +602,6 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     widget.controller.chipHeight = size.height;
   }
 
-  void onRemove() {
-    _closeOverlayHover();
-    widget.controller.selectedItems.clear();
-    widget.controller.updating = false;
-    widget.controller.displayed = false;
-  }
-
   Color gridBgColor(int index) {
     if ((widget.controller.gridCols + 1) % 2 == 0) {
       return index % 2 == 0 ? Colors.grey.shade50 : Colors.grey.shade200;
@@ -888,22 +809,6 @@ class _ChipListState extends State<ChipList> with ChipsAssets {
     }
     return const SizedBox.shrink();
   }
-
-  Widget buildActionButtons() => tailIcons(
-    widget.controller,
-    onErase: widget.controller.disable
-        ? null
-        : () {
-            widget.controller.clean();
-            _refresh();
-          },
-    onDelete: widget.controller.disable
-        ? null
-        : () {
-            onRemove();
-            _refresh();
-          },
-  );
 }
 
 class ChipListController extends ChipItemController with ChipsPoupAttributs {

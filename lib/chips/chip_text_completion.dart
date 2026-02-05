@@ -1,4 +1,5 @@
 import 'package:criteria/chips/chip_controllers.dart';
+import 'package:criteria/chips/chip_decorator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -72,7 +73,7 @@ class ChipTextCompletion extends StatefulWidget {
 }
 
 class _ChipTextCompletionState extends State<ChipTextCompletion>
-    with ChipsAssets, WidgetsBindingObserver {
+    with WidgetsBindingObserver {
   StateSetter? _overlaySetState;
   final GlobalKey _inputChipKey = GlobalKey();
   final GlobalKey _textKey = GlobalKey();
@@ -489,7 +490,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                         minimumSize: const Size(28, 28),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      tooltip: "Fermer",
+                      //tooltip: "Fermer",
                       onPressed: _closeOverlayPopup,
                       icon: const Icon(Icons.close),
                     ),
@@ -615,96 +616,26 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
 
   @override
   Widget build(BuildContext context) {
-    return _buildLayout1();
-  }
-
-  Widget _buildLayout1() {
-    return Opacity(
-      opacity: widget.controller.disable ? 0.5 : 1.0,
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: Container(
-          key: _inputChipKey,
-          constraints: BoxConstraints(minHeight: chipHeightSize + 2),
-          decoration: BoxDecoration(
-            color: widget.controller.disable
-                ? Colors.grey.shade300
-                : widget.controller.backgroundColor,
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Avatar/icône
-              if (!widget.controller.hideAvatar &&
-                  widget.controller.avatar != null)
-                Tooltip(
-                  message: widget.controller.selectedItems.isNotEmpty
-                      ? widget.controller.selectedItems.join('\n')
-                      : '',
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 12, left: 6),
-                    child: widget.controller.avatar,
-                  ),
-                ),
-
-              // Contenu principal
-              Flexible(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _displayChips(),
-                    if (widget.controller.hasValue())
-                      // Add any additional content here
-                      const SizedBox(),
-                  ],
-                ),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: ChipDecorator(
+        key: _inputChipKey,
+        controller: widget.controller,
+        onTap: () {
+          if (widget.controller.selectedItems.isEmpty ||
+              widget.controller.selectedItems.length <
+                  widget.controller.maxEntries) {
+            _openOverlayPopup(context);
+          }
+        },
+        child: widget.controller.selectedItems.isNotEmpty
+            ? _displayChips()
+            : Text(
+                '${widget.controller.label} ?',
+                style: widget.controller.emptyLabelStyle,
               ),
-              _buildActionButtons(),
-            ],
-          ),
-        ),
       ),
     );
-  }
-
-  Widget _buildActionButtons() {
-    List<Widget> buttons = [];
-
-    if (widget.controller.selectedItems.isNotEmpty &&
-        widget.controller.selectedItems.length < widget.controller.maxEntries) {
-      buttons.add(
-        IconButton(
-          tooltip: "Rechercher & Ajouter",
-          icon: const Icon(Icons.search),
-          onPressed: widget.controller.disable
-              ? null
-              : () {
-                  //_enableEditMode();
-                  _openOverlayPopup(context);
-                },
-        ),
-      );
-    }
-    buttons.add(
-      tailIcons(
-        widget.controller,
-        onErase: widget.controller.disable
-            ? null
-            : () {
-                widget.controller.clean();
-                _refresh();
-              },
-        onDelete: widget.controller.disable
-            ? null
-            : () {
-                onDelete();
-              },
-      ),
-    );
-    return Row(mainAxisSize: MainAxisSize.min, children: buttons);
   }
 
   Widget _inputText() {
@@ -747,7 +678,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
             iconSize: 20,
             visualDensity: VisualDensity.compact,
             icon: const Icon(Icons.close),
-            tooltip: widget.controller.tooltipMessageErase,
+            //tooltip: widget.controller.tooltipMessageErase,
             onPressed: () {
               widget.controller.textControleur.clear();
               widget.controller.dataSourceFiltered = null;
@@ -765,10 +696,10 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
     );
   }
 
-  Wrap _displayChips() {
+  Widget _displayChips() {
     return Wrap(
       key: _wrapKey,
-      crossAxisAlignment: WrapCrossAlignment.center,
+      //crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 4.0,
       children: [
         if (widget.controller.selectedItems.isNotEmpty)
@@ -795,36 +726,9 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                       },
               ),
             ),
-          )
-        else
-          InkWell(
-            onTap: widget.controller.disable
-                ? null
-                : () {
-                    _openOverlayPopup(context);
-                  },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Tooltip(
-                message: widget.controller.maxEntries < 99
-                    ? "${widget.controller.maxEntries} critère${widget.controller.maxEntries > 1 ? 's' : ''} possible${widget.controller.maxEntries > 1 ? 's' : ''}"
-                    : 'Plusieurs critères possibles',
-                child: Text(
-                  '${widget.controller.label} ?',
-                  style: widget.controller.emptyLabelStyle,
-                ),
-              ),
-            ),
           ),
       ],
     );
-  }
-
-  void onDelete() {
-    widget.controller.textControleur.clear();
-    widget.controller.updating = false;
-    widget.controller.displayed = false;
-    _refresh();
   }
 
   void onChangedTxtCompletion(String value) async {

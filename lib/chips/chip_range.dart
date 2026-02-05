@@ -1,4 +1,5 @@
 import 'package:criteria/chips/chip_controllers.dart';
+import 'package:criteria/chips/chip_decorator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,7 +15,7 @@ class ChipRange extends StatefulWidget {
   State<ChipRange> createState() => _ChipRangeState();
 }
 
-class _ChipRangeState extends State<ChipRange> with ChipsAssets {
+class _ChipRangeState extends State<ChipRange> {
   final GlobalKey _inputChipKey = GlobalKey();
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntryPopup;
@@ -61,143 +62,49 @@ class _ChipRangeState extends State<ChipRange> with ChipsAssets {
   Widget _buildLayout1() {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 2.0),
-        child: Opacity(
-          opacity: widget.controller.disable ? 0.5 : 1.0,
-          child: Container(
-            key: _inputChipKey,
-            constraints: BoxConstraints(minHeight: chipHeightSize + 2),
-            decoration: BoxDecoration(
-              color: widget.controller.disable
-                  ? Colors.grey.shade300
-                  : widget.controller.backgroundColor,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Theme.of(context).colorScheme.outline),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8.0),
-              onTap: widget.controller.disable
-                  ? null
-                  : () {
-                      _getInputChipPosition();
-                      widget.controller.updating = true;
-                      _showOverlayPopup(context);
-                    },
-              child: Row(
+      child: ChipDecorator(
+        key: _inputChipKey,
+        controller: widget.controller,
+        onTap: () {
+          _getInputChipPosition();
+          widget.controller.updating = true;
+          _showOverlayPopup(context);
+        },
+        child: widget.controller.numRange != null
+            ? Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Avatar
-                  if (!widget.controller.hideAvatar)
-                    Tooltip(
-                      message: widget.controller.comments ?? '',
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 12, left: 6),
-                        child: widget.controller.avatar,
-                      ),
-                    ),
-
-                  // Contenu principal
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 6),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          widget.controller.numRange != null
-                              ? Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      widget.controller.numRange?.start != null
-                                          ? widget.controller.numRange!.start
-                                                .toStringAsFixed(
-                                                  widget.controller.precision,
-                                                )
-                                          : '',
-                                      style: widget.controller.textStyle,
-                                    ),
-                                    Icon(
-                                      Icons.double_arrow,
-                                      color: Colors.grey.shade500,
-                                      size: 18,
-                                    ),
-                                    Text(
-                                      widget.controller.numRange?.end != null
-                                          ? widget.controller.numRange!.end
-                                                .toStringAsFixed(
-                                                  widget.controller.precision,
-                                                )
-                                          : '',
-                                      style: widget.controller.textStyle,
-                                    ),
-                                    if (widget.controller.unitWidget != null)
-                                      widget.controller.unitWidget!,
-                                  ],
-                                )
-                              : Text(
-                                  '${widget.controller.label} ?',
-                                  style: widget.controller.emptyLabelStyle,
-                                ),
-                          if (!widget.controller.updating &&
-                              widget.controller.hasValue() &&
-                              !widget.controller.hideLabelIfNotEmpty)
-                            IgnorePointer(
-                              child: Text(
-                                widget.controller.label,
-                                style: widget.controller.labelStyle.copyWith(
-                                  height: 0.01,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+                  Text(
+                    widget.controller.numRange?.start != null
+                        ? widget.controller.numRange!.start.toStringAsFixed(
+                            widget.controller.precision,
+                          )
+                        : '',
+                    style: widget.controller.textStyle,
                   ),
-                  const SizedBox(width: 8),
-                  _buildActionButtons(),
+                  Icon(
+                    Icons.double_arrow,
+                    color: Colors.grey.shade500,
+                    size: 18,
+                  ),
+                  Text(
+                    widget.controller.numRange?.end != null
+                        ? widget.controller.numRange!.end.toStringAsFixed(
+                            widget.controller.precision,
+                          )
+                        : '',
+                    style: widget.controller.textStyle,
+                  ),
+                  if (widget.controller.unitWidget != null)
+                    widget.controller.unitWidget!,
                 ],
+              )
+            : Text(
+                '${widget.controller.label} ?',
+                style: widget.controller.emptyLabelStyle,
               ),
-            ),
-          ),
-        ),
       ),
     );
-  }
-
-  Widget _buildActionButtons() {
-    // Respect controller-wide displayRemoveButton and local removeButton
-    final bool displayRemove =
-        widget.controller.displayRemoveButton && widget.controller.removeButton;
-
-    if (displayRemove &&
-        widget.controller.numRange != null &&
-        !widget.controller.updating) {
-      return IconButton(
-        icon: tailIcons(widget.controller),
-        tooltip: widget.controller.tooltipMessageRemove,
-        onPressed: widget.controller.disable
-            ? null
-            : () {
-                widget.controller.clean();
-              },
-        constraints: const BoxConstraints(),
-      );
-    } else if (!widget.controller.alwaysDisplayed && displayRemove) {
-      return IconButton(
-        icon: tailIcons(widget.controller),
-        tooltip: widget.controller.tooltipMessageRemove,
-        onPressed: widget.controller.disable
-            ? null
-            : () {
-                onRemove();
-              },
-        constraints: const BoxConstraints(),
-      );
-    }
-    return const SizedBox.shrink();
   }
 
   void _showOverlayPopup(BuildContext context) {
@@ -398,12 +305,6 @@ class _ChipRangeState extends State<ChipRange> with ChipsAssets {
     widget.controller.chipY = position.dy;
     widget.controller.chipWidth = size.width;
     widget.controller.chipHeight = size.height;
-  }
-
-  void onRemove() {
-    widget.controller.numRange = null;
-    widget.controller.updating = false;
-    widget.controller.displayed = false;
   }
 }
 

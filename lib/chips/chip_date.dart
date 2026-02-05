@@ -1,4 +1,5 @@
 import 'package:criteria/chips/chip_controllers.dart';
+import 'package:criteria/chips/chip_decorator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,7 +11,7 @@ class ChipDate extends StatefulWidget {
   State<ChipDate> createState() => _ChipDateState();
 }
 
-class _ChipDateState extends State<ChipDate> with ChipsAssets {
+class _ChipDateState extends State<ChipDate> {
   @override
   void dispose() {
     widget.controller.removeListener(_refresh);
@@ -55,120 +56,29 @@ class _ChipDateState extends State<ChipDate> with ChipsAssets {
   }
 
   Widget _buildLayout1() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2.0),
-      child: Opacity(
-        opacity: widget.controller.disable ? 0.5 : 1.0,
-        child: Container(
-          constraints: BoxConstraints(minHeight: chipHeightSize + 2),
-          decoration: BoxDecoration(
-            color: widget.controller.disable
-                ? Colors.grey.shade300
-                : widget.controller.backgroundColor,
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(8.0),
-            onTap: widget.controller.disable
-                ? null
-                : () async {
-                    widget.controller.updating = true;
-                    await _selectDate(context, widget.controller.date).then((
-                      value,
-                    ) {
-                      setState(() {
-                        if (value != null) {
-                          widget.controller.date = value;
-                        }
-                      });
-                    });
-                    widget.controller.updating = false;
-                  },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Avatar/icône
-                if (!widget.controller.hideAvatar &&
-                    widget.controller.avatar != null)
-                  Tooltip(
-                    message: widget.controller.comments ?? '',
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 12, left: 6),
-                      child: widget.controller.avatar,
-                    ),
-                  ),
-
-                // Contenu principal
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 4, left: 6),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        widget.controller.date != null
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    DateFormat(
-                                      'dd/MM/yy',
-                                    ).format(widget.controller.date!),
-                                    style: widget.controller.textStyle,
-                                  ),
-                                ],
-                              )
-                            : Text(
-                                '${widget.controller.label} ?',
-                                style: widget.controller.emptyLabelStyle,
-                              ),
-                        if (!widget.controller.updating &&
-                            widget.controller.hasValue() &&
-                            !widget.controller.hideLabelIfNotEmpty)
-                          IgnorePointer(
-                            child: Text(
-                              widget.controller.label,
-                              style: widget.controller.labelStyle.copyWith(
-                                height: 0.01,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _buildActionButtons(),
-              ],
+    return ChipDecorator(
+      controller: widget.controller,
+      onTap: () async {
+        widget.controller.updating = true;
+        await _selectDate(context, widget.controller.date).then((value) {
+          setState(() {
+            if (value != null) {
+              widget.controller.date = value;
+            }
+          });
+        });
+        widget.controller.updating = false;
+      },
+      child: widget.controller.date != null
+          ? Text(
+              DateFormat('dd/MM/yy').format(widget.controller.date!),
+              style: widget.controller.textStyle,
+            )
+          : Text(
+              '${widget.controller.label} ?',
+              style: widget.controller.emptyLabelStyle,
             ),
-          ),
-        ),
-      ),
     );
-  }
-
-  Widget _buildActionButtons() {
-    return tailIcons(
-      widget.controller,
-      onErase: widget.controller.disable
-          ? null
-          : () {
-              widget.controller.clean();
-              _refresh();
-            },
-      onDelete: widget.controller.disable
-          ? null
-          : () {
-              onRemove();
-            },
-    );
-  }
-
-  void onRemove() {
-    widget.controller.date = null;
-    widget.controller.updating = false;
-    widget.controller.displayed = false;
   }
 }
 
