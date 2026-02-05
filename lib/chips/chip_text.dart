@@ -64,6 +64,7 @@ class _ChipTextState extends State<ChipText> {
                 style: widget.controller.altTextStyle,
                 inputFormatters: widget.controller.inputFormatters,
                 onChanged: (value) {
+                  widget.controller.displayed = value.isNotEmpty;
                   if (mounted) setState(() {});
                 },
                 onSubmitted: (value) {
@@ -112,7 +113,7 @@ class ChipTextController extends ChipItemController {
 
   bool eraseButton = true;
   bool removeButton = true;
-  double editingWidth = 200;
+
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,

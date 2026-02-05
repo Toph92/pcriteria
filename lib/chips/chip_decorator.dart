@@ -143,6 +143,7 @@ class ChipDecorator extends StatelessWidget {
               backgroundColor: controller.disable
                   ? Colors.grey.shade300
                   : controller.backgroundColor,
+              borderColor: Colors.grey.shade700,
 
               //borderColor: Colors.grey,
 

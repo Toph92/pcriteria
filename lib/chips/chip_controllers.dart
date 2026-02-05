@@ -66,6 +66,8 @@ abstract class ChipItemController with ChangeNotifier {
   }
 
   bool alwaysDisplayed = false;
+  double editingWidth = 200;
+  double minWidth = 150;
 
   String name;
 

@@ -15,6 +15,13 @@
             "cwd": "examples/example1",
             "request": "launch",
             "type": "dart"
+        },
+        {
+            "name": "Example2",
+            "type": "dart",
+            "request": "launch",
+            "cwd": "examples/example2",
+            "program": "lib/main.dart"
         }
     ]
 }
