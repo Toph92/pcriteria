@@ -39,7 +39,7 @@ class _ChipTextExampleState extends State<ChipTextExample> {
       group: ChipGroup(name: 'Example Group', labelText: 'Example Group'),
       label: 'Saisie de texte',
     );
-    _textController.editingWidth
+    _textController.expandable = true;
     //_textController.addListener(_refresh);
   }
 
@@ -70,7 +70,7 @@ class _ChipTextExampleState extends State<ChipTextExample> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            ChipText(controller: _textController),
+            SizedBox(width: 300, child: ChipText(controller: _textController)),
             const SizedBox(height: 40),
             Text(
               'Valeur saisie : ${_textController.value ?? "Aucune"}',

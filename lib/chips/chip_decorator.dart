@@ -194,7 +194,8 @@ class ChipDecorator extends StatelessWidget {
                       Text(controller.label, style: controller.labelStyle),
 
                     // Contenu principal
-                    child,
+                    if (controller.expandable) Expanded(child: child),
+                    if (!controller.expandable) child,
                     const SizedBox(width: 2),
                     if (effectiveActionButtons != null) effectiveActionButtons,
                     if (effectiveActionButtons == null)
