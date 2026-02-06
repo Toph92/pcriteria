@@ -137,7 +137,6 @@ class _CombinedExampleState extends State<CombinedExample> {
           )
           ..fuzzySearchStep = 1
           ..maxResults = 100
-          ..alwaysDisplayed = true
           ..comments = "Autocompletion de clients"
           ..avatar = null
           /*..popupHeaderItems = [

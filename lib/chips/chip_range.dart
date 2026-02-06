@@ -344,8 +344,6 @@ class ChipRangeController extends ChipItemController with ChipsPoupAttributs {
 
   RangeValues? minMaxRange;
 
-  bool eraseButton = true;
-  bool removeButton = true;
   bool multiSelect = false;
   bool quitOnSelect = false;
   bool checkIcon = false;

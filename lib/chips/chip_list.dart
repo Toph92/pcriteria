@@ -824,8 +824,6 @@ class ChipListController extends ChipItemController with ChipsPoupAttributs {
 
   List<ChipListItem> selectedItems = [];
 
-  bool eraseButton = true;
-  bool removeButton = true;
   bool multiSelect = false;
   bool quitOnSelect = false;
   bool checkIcon = false;

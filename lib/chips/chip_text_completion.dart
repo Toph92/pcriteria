@@ -799,8 +799,13 @@ class ChipTextCompletionController<T extends SearchEntry>
   int? fuzzySearchStep; // null pour désactiver la recherche floue
   bool selectedFromList = false;
   int minCharacterNeeded;
+
+  /// Garder le popup ouvert après sélection
   bool keepPopupOpen = false;
+
+  /// Nombre maximum d'entrées à afficher
   int maxEntries = 1;
+
   void Function(List<T> values)? onSelected;
   List<SearchEntry> selectedItems = [];
   int _numRequest = 0;
@@ -833,9 +838,6 @@ class ChipTextCompletionController<T extends SearchEntry>
 
   late final FocusNode _focusNode;
   FocusNode get focusNode => _focusNode;
-
-  bool eraseButton = true;
-  bool removeButton = true;
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,

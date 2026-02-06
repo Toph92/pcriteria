@@ -111,9 +111,6 @@ class ChipTextController extends ChipItemController {
   late final FocusNode _focusNode;
   FocusNode get focusNode => _focusNode;
 
-  //bool eraseButton = true;
-  //bool removeButton = true;
-
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
