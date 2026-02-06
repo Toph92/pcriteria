@@ -39,10 +39,6 @@ class ChipsCriteria extends StatefulWidget {
     this.groupsFilterDisplay,
     this.groupsFilterSelector,
     this.showEraseAllButton = true,
-    @Deprecated(
-      'Use showEraseAllButton instead. This parameter will be removed in a future version.',
-    )
-    this.showRefreshButton,
   });
 
   final String? title;
@@ -52,11 +48,6 @@ class ChipsCriteria extends StatefulWidget {
   final List<ChipGroup>? groupsFilterSelector;
 
   final bool showEraseAllButton;
-
-  @Deprecated(
-    'Use showEraseAllButton instead. This parameter will be removed in a future version.',
-  )
-  final bool? showRefreshButton;
 
   final ChipsController chipsListControllers;
   final TextStyle titleStyle;
@@ -70,6 +61,7 @@ class ChipsCriteria extends StatefulWidget {
 class _ChipsCriteriaState extends State<ChipsCriteria>
     with WidgetsBindingObserver {
   final GlobalKey _wrapKey = GlobalKey();
+  final GlobalKey _btnEraseKey = GlobalKey();
   double _wrapHeight = 0;
   List<String> _groupsNameFilterDisplay = [];
   List<ChipItemController> _chips = [];
@@ -126,7 +118,7 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
         .where(
           (element) =>
               element.displayed &&
-              (_groupsNameFilterDisplay.contains(element.group.name) ||
+              (_groupsNameFilterDisplay.contains(element.group!.name) ||
                   _groupsNameFilterDisplay.isEmpty),
         )
         .toList();
@@ -158,7 +150,29 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                     if (widget.showEraseAllButton &&
                         _wrapHeight > 80 &&
                         _chips.where((e) => e.hasValue()).isNotEmpty)
-                      Container(
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: IconButton.filled(
+                          tooltip: widget
+                              .chipsListControllers
+                              .eraseAllCriteriaTooltipMessage,
+                          key: _btnEraseKey,
+                          onPressed: () {
+                            setState(() {
+                              for (final element
+                                  in widget.chipsListControllers.chips) {
+                                element.clean();
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.recycling),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                    /* Container(
                         margin: const EdgeInsets.only(top: 4),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -199,7 +213,7 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                             ),
                           ),
                         ),
-                      ),
+                      ),*/
                   ],
                 ),
                 _separatorAndHelper(),

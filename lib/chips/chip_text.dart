@@ -93,7 +93,7 @@ class _ChipTextState extends State<ChipText> {
 class ChipTextController extends ChipItemController {
   ChipTextController({
     required super.name,
-    required super.group,
+    super.group,
     super.label,
     super.avatar = const Icon(Icons.abc, size: 24),
     super.chipType = ChipType.text,
@@ -111,8 +111,8 @@ class ChipTextController extends ChipItemController {
   late final FocusNode _focusNode;
   FocusNode get focusNode => _focusNode;
 
-  bool eraseButton = true;
-  bool removeButton = true;
+  //bool eraseButton = true;
+  //bool removeButton = true;
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,

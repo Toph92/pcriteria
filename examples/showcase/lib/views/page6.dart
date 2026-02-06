@@ -49,8 +49,12 @@ class _Page6State extends State<Page6> with CommonPages {
           ..comments = "Un critère de recherche avec un filtre"
           ..avatar = Icon(Icons.list, color: Colors.blue.shade800, size: 24)
           ..popupHeaderItems = [
-            PopupHeaderControllerItem(key: 'code', label: "Code", value: true),
-            PopupHeaderControllerItem(key: 'name', label: "Nom", value: true),
+            PopupHeaderControllerItem(
+              key: 'code',
+              label: "Code",
+              checked: true,
+            ),
+            PopupHeaderControllerItem(key: 'name', label: "Nom", checked: true),
           ]
           ..keepPopupOpen = false
           ..maxEntries = 1,
@@ -97,18 +101,18 @@ class _Page6State extends State<Page6> with CommonPages {
             PopupHeaderControllerItem(
               key: 'siren',
               label: "SIREN",
-              value: true,
+              checked: true,
             ),
             PopupHeaderControllerItem(
               key: 'raison_sociale',
               label: "Raison sociale",
-              value: true,
+              checked: true,
             ),
             PopupHeaderControllerItem(key: 'code_postal', label: "Code postal"),
             PopupHeaderControllerItem(
               key: 'code_ape',
               label: "Code APE",
-              value: true,
+              checked: true,
             ),
           ]
           ..keepPopupOpen = false

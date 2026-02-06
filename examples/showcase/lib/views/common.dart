@@ -51,7 +51,7 @@ mixin class CommonPages {
                     // Ajouter les filtres actifs
                     if (popupHeaderItems != null) {
                       List<String> activeFilters = popupHeaderItems
-                          .where((item) => item.value)
+                          .where((item) => item.checked)
                           .map((item) => item.key)
                           .toList();
                       if (activeFilters.isNotEmpty) {
@@ -128,9 +128,9 @@ mixin class CommonPages {
             PopupHeaderControllerItem(
               key: 'first',
               label: "Prénoms",
-              value: true,
+              checked: true,
             ),
-            PopupHeaderControllerItem(key: 'last', label: "Nom", value: true),
+            PopupHeaderControllerItem(key: 'last', label: "Nom", checked: true),
           ]
           ..keepPopupOpen = true
           ..maxEntries = 3,

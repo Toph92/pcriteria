@@ -51,12 +51,12 @@ void initializeSearchCriteria() {
           PopupHeaderControllerItem(
             key: 'last',
             label: "Last Name",
-            value: true,
+            checked: true,
           ),
           PopupHeaderControllerItem(
             key: 'first',
             label: "First Name",
-            value: true,
+            checked: true,
           ),
         ]
         ..keepPopupOpen = true

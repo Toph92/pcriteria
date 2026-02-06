@@ -32,7 +32,7 @@ abstract class ChipItemController with ChangeNotifier {
     required this.chipType,
     required this.avatar,
     required this.name,
-    required this.group,
+    this.group,
     this.label = '',
     Function()? onEnter,
   }) : _onEnter = onEnter;
@@ -54,7 +54,7 @@ abstract class ChipItemController with ChangeNotifier {
     _onEnter = value;
   }
 
-  ChipGroup group;
+  ChipGroup? group;
 
   bool _displayed = false;
   bool get displayed => alwaysDisplayed ? true : _displayed;
@@ -67,15 +67,22 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool alwaysDisplayed = false;
   double editingWidth = 200;
+
+  /// if true, the chip can be expanded to fill width of the parent widget
   bool expandable = false;
 
   String name;
 
   ChipType chipType;
 
-  /// Whether the chip can be removed/erased
+  /// Whether the chip can be removed
   bool displayRemoveButton = true;
+
+  /// Whether the chip can be erased
   bool displayEraseButton = true;
+
+  /// Whether the chip should have a border
+  bool removeBorder = false;
 
   // for backward compatibility
   @Deprecated(
@@ -104,6 +111,7 @@ abstract class ChipItemController with ChangeNotifier {
 
   Color backgroundColor = Colors.grey.shade50;
   Color backgroundColorAlt = Colors.grey.shade200;
+  Color popupBackgroundColor = Colors.white;
   Color hoverColor = Colors.yellow;
   String? groupName;
   String? comments;
@@ -271,6 +279,7 @@ class ChipsController with ChipsPoupAttributs, ChangeNotifier {
 
   /// Tooltip message used for the "add criteria" button (customizable)
   String addCriteriaTooltipMessage = 'Ajouter des critères';
+  String eraseAllCriteriaTooltipMessage = 'Effacer tous les critères';
 
   List<ChipItemController> get chips => _chips;
 
@@ -282,6 +291,7 @@ class ChipsController with ChipsPoupAttributs, ChangeNotifier {
         ..addListener(notifyListeners)
         ..parentOnEnter = onEnter;
       assert(map[chip.name] == null, "Duplicate chip name: ${chip.name}");
+      assert(chip.group != null, "Chip group is null: ${chip.name}");
       map[chip.name] = (map[chip.name] ?? 0) + 1;
     }
     notifyListeners();

@@ -120,6 +120,53 @@ class ChipDecorator extends StatelessWidget {
     final Widget? effectiveActionButtons =
         actionButtons ?? _buildDefaultActionButtons(context);
 
+    Widget chipContent = InkWell(
+      borderRadius: BorderRadius.circular(8.0),
+      onTap: controller.disable ? null : onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Avatar/icône
+          if (!controller.hideAvatar && controller.avatar != null)
+            Tooltip(
+              message: controller.comments ?? '',
+              child: controller.avatar,
+            ),
+          const SizedBox(width: 2),
+          if (controller.chipType == ChipType.boolean)
+            Text(controller.label, style: controller.labelStyle),
+
+          // Contenu principal
+          if (controller.chipType == ChipType.boolean && controller.expandable)
+            const Expanded(child: SizedBox.shrink()),
+
+          if (controller.expandable && controller.chipType != ChipType.boolean)
+            Expanded(child: child),
+          if (!controller.expandable || controller.chipType == ChipType.boolean)
+            child,
+          const SizedBox(width: 2),
+          if (effectiveActionButtons != null) effectiveActionButtons,
+          if (effectiveActionButtons == null) const SizedBox(width: 10),
+        ],
+      ),
+    );
+
+    if (controller.removeBorder) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 2.0),
+        child: Opacity(
+          opacity: controller.disable ? 0.5 : 1.0,
+          child: SizedBox(
+            height: chipHeightSize,
+            child: Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: chipContent,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 2.0),
       child: Opacity(
@@ -144,65 +191,7 @@ class ChipDecorator extends StatelessWidget {
                   ? Colors.grey.shade300
                   : controller.backgroundColor,
               borderColor: Colors.grey.shade700,
-
-              //borderColor: Colors.grey,
-
-              /* decoration: InputDecoration(
-                labelText:
-                    (controller.updating || controller.hasValue()) &&
-                        !controller.hideLabelIfNotEmpty
-                    ? controller.label
-                    : null,
-                labelStyle: controller.labelStyle,
-                enabled: !controller.disable,
-                filled: true,
-                fillColor: controller.disable
-                    ? Colors.grey.shade300
-                    : controller.backgroundColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 4.0,
-                ),
-                isDense: true,
-              ),*/
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8.0),
-                onTap: controller.disable ? null : onTap,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Avatar/icône
-                    if (!controller.hideAvatar && controller.avatar != null)
-                      Tooltip(
-                        message: controller.comments ?? '',
-                        child: controller.avatar,
-                      ),
-                    const SizedBox(width: 2),
-                    if (controller.chipType == ChipType.boolean)
-                      Text(controller.label, style: controller.labelStyle),
-
-                    // Contenu principal
-                    if (controller.expandable) Expanded(child: child),
-                    if (!controller.expandable) child,
-                    const SizedBox(width: 2),
-                    if (effectiveActionButtons != null) effectiveActionButtons,
-                    if (effectiveActionButtons == null)
-                      const SizedBox(width: 10),
-                  ],
-                ),
-              ),
+              child: chipContent,
             ),
           ),
         ),

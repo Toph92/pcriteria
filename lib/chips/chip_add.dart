@@ -50,10 +50,6 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
 
   @override
   Widget build(BuildContext context) {
-    return _buildLayout1();
-  }
-
-  Widget _buildLayout1() {
     return CompositedTransformTarget(
       link: _layerLink,
       child: Padding(
@@ -77,20 +73,26 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   }
 
   void initChips() {
+    for (final element in _chips) {
+      if (element.group == null) {
+        throw Exception("Chip ${element.name} has no group");
+      }
+    }
+
     _groupsNameFilterSelector =
         widget.groupsFilterSelector?.map((e) => e.name).toList() ?? [];
     _chips
       ..addAll(
         widget.controller.chips.where(
           (e) =>
-              _groupsNameFilterSelector.contains(e.group.name) ||
+              _groupsNameFilterSelector.contains(e.group!.name) ||
               _groupsNameFilterSelector.isEmpty,
         ),
       )
-      ..sort((a, b) => a.group.order.compareTo(b.order))
+      ..sort((a, b) => a.group!.order.compareTo(b.order))
       ..sort((a, b) {
         if (a.group != b.group) {
-          return a.group.order.compareTo(b.order);
+          return a.group!.order.compareTo(b.order);
         }
         return a.order.compareTo(b.order);
       });
@@ -98,7 +100,7 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
     for (final element in _chips) {
       element.key_ ??= GlobalKey();
       if (!groups.contains(element.group)) {
-        groups.add(element.group);
+        groups.add(element.group!);
       }
     }
   }
@@ -110,7 +112,7 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
     for (final element in _chips) {
       if (element.group != lastGroup) {
         group = groups.firstWhere(
-          (g) => g.name == element.group.name,
+          (g) => g.name == element.group!.name,
           orElse: () {
             throw Exception("Group not found");
           },

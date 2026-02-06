@@ -124,7 +124,6 @@ class ChipDatesRangeController extends ChipItemController {
   FocusNode focusNode = FocusNode();
   bool eraseButton = true;
   bool removeButton = true;
-  double editingWidth = 200;
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,

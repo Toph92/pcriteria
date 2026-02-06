@@ -104,6 +104,7 @@ class ChipBooleanController extends ChipItemController {
   set value(dynamic newValue) {
     if (newValue != _value) {
       _value = newValue;
+      displayed = true;
       notifyListeners();
     }
   }

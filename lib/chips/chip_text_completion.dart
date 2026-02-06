@@ -183,7 +183,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                     height: _popupHeight,
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: widget.controller.backgroundColor,
+                      color: widget.controller.popupBackgroundColor,
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
@@ -267,9 +267,9 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
               children: [
                 Checkbox(
                   visualDensity: const VisualDensity(vertical: -4),
-                  value: item.value,
+                  value: item.checked,
                   onChanged: (bool? value) {
-                    item.value = value ?? false;
+                    item.checked = value ?? false;
                     cannotHaveAllUnset();
                     _updateResults();
                     _refresh();
@@ -294,13 +294,13 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
   void cannotHaveAllUnset() {
     if (widget.controller.popupHeaderItems.isEmpty) return;
     if (widget.controller.popupHeaderItems
-        .where((item) => item.value != false)
+        .where((item) => item.checked != false)
         .isNotEmpty) {
       return;
     }
     // Si tous les items sont décochés, on coche tous
     for (final item in widget.controller.popupHeaderItems) {
-      item.value = true;
+      item.checked = true;
     }
   }
 
@@ -655,7 +655,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                   decoration: InputDecoration(
                     isDense: true,
                     hintText: widget.controller.popupHeaderItems.isNotEmpty
-                        ? '${widget.controller.popupHeaderItems.where((item) => item.value).map((item) => item.label).join(', ')} ?'
+                        ? '${widget.controller.popupHeaderItems.where((item) => item.checked).map((item) => item.label).join(', ')} ?'
                         : 'Vos critères ?',
                     hintStyle: const TextStyle(
                       color: Colors.grey,
@@ -764,8 +764,8 @@ class ChipTextCompletionController<T extends SearchEntry>
     with ChipsPoupAttributs {
   ChipTextCompletionController({
     required super.name,
-    required super.group,
     required this.onRequestUpdateDataSource,
+    super.group,
     super.label,
     this.onSelected,
     this.fuzzySearchStep = 0,
@@ -836,7 +836,7 @@ class ChipTextCompletionController<T extends SearchEntry>
 
   bool eraseButton = true;
   bool removeButton = true;
-  double editingWidth = 200;
+
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -890,7 +890,7 @@ class ChipTextCompletionController<T extends SearchEntry>
 
     try {
       String keyCache =
-          '${(_arCriteria ?? []).join(' ')}|${popupHeaderItems.isNotEmpty ? popupHeaderItems.where((e) => e.value).map((e) => e.key).join(',') : ''}'; // super lisible !
+          '${(_arCriteria ?? []).join(' ')}|${popupHeaderItems.isNotEmpty ? popupHeaderItems.where((e) => e.checked).map((e) => e.key).join(',') : ''}'; // super lisible !
       dataSource = cacheManager.get(keyCache);
 
       if (dataSource != null && dataSource!.isNotEmpty) {
@@ -978,65 +978,6 @@ class ChipTextCompletionController<T extends SearchEntry>
       notifyListeners();
     }
   }
-
-  /* Future<void> updateResultsetOld() async {
-    final stopwatch = Stopwatch()..start();
-    durationLastRequest = null;
-    dataSourceFiltered = null;
-
-    // Supprimer les éléments de arCriteria qui ont moins de minCharacterNeeded caractères
-    _arCriteria =
-        _arCriteria?.where((e) => e.length >= minCharacterNeeded).toList();
-
-    if (_arCriteria == null || _arCriteria!.isEmpty) {
-      dataSourceFiltered = [];
-      return;
-    }
-
-    String key = _arCriteria!.join();
-
-    // Vérifier le cache d'abord
-    dataSource = cacheManager.get(key);
-
-    // Si pas en cache, faire la requête
-    if (dataSource == null) {
-      dataSource = await onRequestUpdateDataSource(
-        _arCriteria,
-        popupHeaderItems,
-      );
-      if (dataSource != null && dataSource!.isNotEmpty) {
-        cacheManager.add(CacheItem<T>(key: key, value: dataSource!));
-      }
-    }
-
-    assert(dataSource != null, 'dataSource ne peut pas être null');
-
-    // Filtrer les résultats exacts
-    dataSourceFiltered =
-        dataSource!
-            .where((element) => element._sText.containsAll(_arCriteria ?? []))
-            .toList();
-
-    // Marquer les résultats exacts comme non-approximatifs
-    dataSourceFiltered?.forEach((element) {
-      element.fuzzySearchResult = false;
-    });
-
-    // Si aucun résultat exact et recherche approximative activée
-    if (dataSourceFiltered!.isEmpty &&
-        fuzzySearch &&
-        cacheManager.isNotEmpty()) {
-      List<T> bestFuzzyResults = _getNearestEntries(
-        arCriteria: _arCriteria!,
-        dataSource:
-            cacheManager.isNotEmpty() ? cacheManager.fullContent : dataSource!,
-      );
-
-      dataSourceFiltered!.addAll(bestFuzzyResults);
-    }
-
-    durationLastRequest = stopwatch.elapsed;
-  } */
 
   /// SPLIT [source] in function of [arChunk]
   List<String> splitText(String source, List<String> arChunk) {
@@ -1231,41 +1172,17 @@ class ChipTextCompletionController<T extends SearchEntry>
       'displayed': displayed,
     };
   }
-
-  /* @override
-  bool fromJson(List<Map<String, dynamic>> jsonList) {
-    final Map<String, Map<String, dynamic>> mappedByName = {
-      for (final item in jsonList) item['name']: item,
-    };
-    if (mappedByName[name] == null) {
-      return false;
-    }
-    List<SearchEntry> value =
-        (mappedByName[name]?['value'] as List<dynamic>?)
-            ?.map(
-              (e) => SearchEntry(
-                txtValue: e['displayedValue'] ?? '',
-                sID: e['sID'] ?? '',
-              ),
-            )
-            .toList() ??
-        [];
-    selectedItems = value;
-    displayed = mappedByName[name]?['displayed'];
-    updating = false;
-    return true;
-  } */
 }
 
 class PopupHeaderControllerItem {
   PopupHeaderControllerItem({
     required this.label,
     required this.key,
-    this.value = false,
+    this.checked = false,
   });
-  String label;
-  String key;
-  bool value;
+  String label; // label visible
+  String key; // clé de la colonne (nom de la colonne par exemple)
+  bool checked; // si la colonne est cochée par défaut
 }
 
 class SearchEntry {

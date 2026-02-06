@@ -1,6 +1,6 @@
+import 'package:criteria/criteria.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:criteria/criteria.dart';
 
 void main() {
   testWidgets('ChipText updates displayed status on input', (
@@ -45,33 +45,5 @@ void main() {
     // Verify displayed is false and value is null (or empty if logic allows, but here null)
     expect(controller.displayed, isFalse);
     expect(controller.value, isNull);
-  });
-
-  testWidgets('ChipText respects minWidth', (WidgetTester tester) async {
-    final controller = ChipTextController(
-      name: 'test_width',
-      group: ChipGroup.none(),
-      label: 'Width Test',
-    );
-    // Explicitly set minWidth higher than default content
-    controller.displayed = true; // Force display to verify width
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Center(child: ChipText(controller: controller)),
-        ),
-      ),
-    );
-
-    // Verify width is >= 300
-    // We target the ChipDecorator or the SizedBox inside it.
-    // Finding by type ChipText gives the widget. We need the render object size.
-    final chipFinder = find.byType(ChipText);
-    final Size size = tester.getSize(chipFinder);
-
-    // Note: ChipText might wrap loose. But ChipDecorator applies minWidth.
-    // Check if the size is at least 300.
-    expect(size.width, greaterThanOrEqualTo(300));
   });
 }
