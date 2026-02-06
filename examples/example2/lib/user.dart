@@ -76,18 +76,21 @@ class User extends SearchEntry {
             ),
           ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
           children: [
-            Row(
-              children: [
-                Text(
-                  lastName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 4),
-                Text(firstName ?? ''),
-              ],
+            //Text(lastName, style: const TextStyle(fontWeight: FontWeight.bold)),
+            //const SizedBox(width: 4),
+            //Text(firstName ?? ''),
+            const SizedBox(width: 4),
+            Text.rich(
+              TextSpan(
+                children: [
+                  ...controller.hightLightChunksFound(lastName),
+                  const TextSpan(text: ' '), // Espace entre nom et prénom
+                  ...controller.hightLightChunksFound(firstName ?? ''),
+                ],
+              ),
+              softWrap: true,
             ),
           ],
         ),

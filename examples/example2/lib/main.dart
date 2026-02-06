@@ -140,7 +140,7 @@ class _CombinedExampleState extends State<CombinedExample> {
           ..alwaysDisplayed = true
           ..comments = "Autocompletion de clients"
           ..avatar = null
-          ..popupHeaderItems = [
+          /*..popupHeaderItems = [
             PopupHeaderControllerItem(key: 'id', label: "Code"),
             PopupHeaderControllerItem(
               key: 'firstname',
@@ -152,12 +152,12 @@ class _CombinedExampleState extends State<CombinedExample> {
               label: "Nom",
               checked: true,
             ),
-          ]
+          ]*/
           ..keepPopupOpen = true
-          ..maxEntries = 3;
-    //..removeBorder = true;
-    //..backgroundColor = Colors.transparent;
-    //..popupBackgroundColor = Colors.yellow.shade100;
+          ..maxEntries = 3
+          ..removeBorder = true
+          ..backgroundColor = Colors.transparent
+          ..popupBackgroundColor = Colors.yellow.shade100;
     // Boolean Controller Init
     _booleanController =
         ChipBooleanController(
@@ -167,7 +167,7 @@ class _CombinedExampleState extends State<CombinedExample> {
 
             label: 'Actif',
           )
-          ..expandable = false
+          ..expandable = true
           ..displayRemoveButton = false;
   }
 
