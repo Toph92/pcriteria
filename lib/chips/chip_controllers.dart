@@ -25,7 +25,6 @@ enum ChipType {
 }
 
 double avatarSize = 24;
-double chipHeightSize = 40;
 
 abstract class ChipItemController with ChangeNotifier {
   ChipItemController({
@@ -67,6 +66,7 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool alwaysDisplayed = false;
   double editingWidth = 200;
+  double chipHeightSize = 40;
 
   /// if true, the chip can be expanded to fill width of the parent widget
   bool expandable = false;

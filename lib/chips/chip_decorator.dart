@@ -121,7 +121,7 @@ class ChipDecorator extends StatelessWidget {
         actionButtons ?? _buildDefaultActionButtons(context);
 
     Widget chipContent = InkWell(
-      borderRadius: BorderRadius.circular(8.0),
+      //borderRadius: BorderRadius.circular(8.0),
       onTap: controller.disable ? null : onTap,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -157,7 +157,7 @@ class ChipDecorator extends StatelessWidget {
         child: Opacity(
           opacity: controller.disable ? 0.5 : 1.0,
           child: SizedBox(
-            height: chipHeightSize,
+            height: controller.chipHeightSize,
             child: Padding(
               padding: const EdgeInsets.all(1.0),
               child: chipContent,
@@ -172,7 +172,7 @@ class ChipDecorator extends StatelessWidget {
       child: Opacity(
         opacity: controller.disable ? 0.5 : 1.0,
         child: SizedBox(
-          height: chipHeightSize,
+          height: controller.chipHeightSize,
           child: Padding(
             padding: const EdgeInsets.all(1.0),
             child: TitleBorderBox(

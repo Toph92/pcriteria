@@ -137,6 +137,7 @@ class _CombinedExampleState extends State<CombinedExample> {
           )
           ..fuzzySearchStep = 1
           ..maxResults = 100
+          ..alwaysDisplayed = true
           ..comments = "Autocompletion de clients"
           ..avatar = null
           /*..popupHeaderItems = [
@@ -156,7 +157,8 @@ class _CombinedExampleState extends State<CombinedExample> {
           ..maxEntries = 3
           ..removeBorder = true
           ..backgroundColor = Colors.transparent
-          ..popupBackgroundColor = Colors.yellow.shade100;
+          ..popupBackgroundColor = Colors.yellow.shade100
+          ..chipHeightSize = 28;
     // Boolean Controller Init
     _booleanController =
         ChipBooleanController(

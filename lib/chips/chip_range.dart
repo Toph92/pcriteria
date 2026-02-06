@@ -389,11 +389,6 @@ class ChipRangeController extends ChipItemController with ChipsPoupAttributs {
     fontSize: 14,
     fontWeight: FontWeight.w600,
   );
-  @override
-  TextStyle inputTextStyle = const TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-  );
 
   @override
   void dispose() {

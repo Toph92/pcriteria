@@ -842,10 +842,6 @@ class ChipListController extends ChipItemController with ChipsPoupAttributs {
     fontSize: 14,
     fontWeight: FontWeight.w600,
   );
-  TextStyle inputTextStyle = const TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-  );
 
   @override
   bool hasValue() => selectedItems.isNotEmpty;
