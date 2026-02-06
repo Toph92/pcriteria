@@ -134,7 +134,15 @@ abstract class ChipItemController with ChangeNotifier {
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.italic,
   );
-  TextStyle altTextStyle = const TextStyle(
+  /*TextStyle altTextStyle = const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );*/
+  TextStyle inputTextStyle = const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
+  TextStyle selectedTextStyle = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
   );

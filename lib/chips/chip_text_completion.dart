@@ -663,7 +663,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                     ),
                   ),
                   controller: widget.controller.textControleur,
-                  style: widget.controller.altTextStyle,
+                  style: widget.controller.inputTextStyle,
                   inputFormatters: widget.controller.inputFormatters,
                   onChanged: (value) async {
                     onChangedTxtCompletion(value);
@@ -708,7 +708,10 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
               message: chip.hoverDescription ?? '',
               child: Chip(
                 padding: const EdgeInsets.all(0),
-                label: Text(chip.displaySelected),
+                label: Text(
+                  chip.displaySelected,
+                  style: widget.controller.selectedTextStyle,
+                ),
                 labelPadding: const EdgeInsets.only(left: 4),
                 visualDensity: const VisualDensity(vertical: -4),
                 deleteIcon: const Icon(Icons.close),

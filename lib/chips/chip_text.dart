@@ -61,7 +61,7 @@ class _ChipTextState extends State<ChipText> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                 ),
-                style: widget.controller.altTextStyle,
+                style: widget.controller.inputTextStyle,
                 inputFormatters: widget.controller.inputFormatters,
                 onChanged: (value) {
                   widget.controller.displayed = value.isNotEmpty;

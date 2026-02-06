@@ -215,7 +215,7 @@ class _ChipRangeState extends State<ChipRange> {
                     fontSize: 12,
                   ),
                 ),
-                style: widget.controller.altTextStyle,
+                style: widget.controller.inputTextStyle,
                 onChanged: (value) {
                   if (context.mounted) {
                     setState(() {
@@ -251,7 +251,7 @@ class _ChipRangeState extends State<ChipRange> {
                     fontSize: 12,
                   ),
                 ),
-                style: widget.controller.altTextStyle,
+                style: widget.controller.inputTextStyle,
                 onChanged: (value) {
                   if (context.mounted) {
                     setState(() {
@@ -389,6 +389,7 @@ class ChipRangeController extends ChipItemController with ChipsPoupAttributs {
     fontSize: 14,
     fontWeight: FontWeight.w600,
   );
+  @override
   TextStyle inputTextStyle = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
