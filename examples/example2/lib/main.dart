@@ -223,10 +223,24 @@ class _CombinedExampleState extends State<CombinedExample> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            Container(
-              color: Colors.yellow,
-              width: 300,
-              child: ChipTextCompletion(controller: _clientController),
+            Row(
+              mainAxisSize: .min,
+              children: [
+                Container(
+                  color: Colors.yellow,
+                  width: 300,
+                  child: ChipTextCompletion(controller: _clientController),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    debugPrint(
+                      'Clients : ${_clientController.value!.first.sID}',
+                    );
+                    setState(() {});
+                  },
+                  child: const Text('Valider Clients'),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             Text(
