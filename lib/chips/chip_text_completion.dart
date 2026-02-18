@@ -106,8 +106,17 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
     WidgetsBinding.instance.addObserver(this);
 
     // Initialiser les dimensions du popup
-    _popupWidth = widget.controller.popupInitWidth * 1.8; // bidouille
-    _popupHeight = widget.controller.popupInitHeight;
+    if (widget.controller.popupWidth != null) {
+      _popupWidth = widget.controller.popupWidth!;
+    } else {
+      _popupWidth = widget.controller.popupInitWidth * 1.8; // bidouille
+    }
+
+    if (widget.controller.popupHeight != null) {
+      _popupHeight = widget.controller.popupHeight!;
+    } else {
+      _popupHeight = widget.controller.popupInitHeight;
+    }
 
     // Ajouter les listeners pour la completion de texte
     widget.controller.textControleur.addListener(_onTextChanged);

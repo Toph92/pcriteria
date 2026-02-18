@@ -43,6 +43,8 @@ void initializeSearchCriteria() {
         )
         ..fuzzySearchStep = 1
         ..maxResults = 20
+        ..popupWidth = 300
+        ..popupHeight = 200
         ..alwaysDisplayed = false
         ..displayRemoveButton = false
         ..comments = "Client selection by autocomplete"

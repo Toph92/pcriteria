@@ -66,6 +66,9 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool alwaysDisplayed = false;
   double editingWidth = 200;
+  double? popupWidth;
+  double? popupHeight;
+
   double chipHeightSize = 40;
 
   /// if true, the chip can be expanded to fill width of the parent widget
