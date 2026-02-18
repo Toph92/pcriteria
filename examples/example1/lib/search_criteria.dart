@@ -64,6 +64,41 @@ void initializeSearchCriteria() {
         ..keepPopupOpen = true
         ..maxEntries = 3,
 
+      // 1b. Client (Single) - Autocomplete Single Mode
+      ChipTextCompletionController<User>(
+          name: "client_single",
+          group: searchGroup,
+          label: "Client (Single)",
+          onRequestUpdateDataSource:
+              (
+                List<String>? criteria,
+                List<PopupHeaderControllerItem>? popupHeaderItems,
+                Map<SearchOptionKey, dynamic> searchOptions,
+              ) async {
+                if (criteria == null || criteria.isEmpty) {
+                  return (staticUsers, null);
+                }
+
+                final searchTerm = criteria.first.toLowerCase();
+                final filteredUsers = staticUsers.where((user) {
+                  final fullName = "${user.lastName} ${user.firstName ?? ''}"
+                      .toLowerCase();
+                  return fullName.contains(searchTerm);
+                }).toList();
+
+                return (filteredUsers, null);
+              },
+        )
+        ..singleMode = true
+        ..minCharacterNeeded = 2
+        ..popupWidth = 350
+        ..popupHeight = 400
+        ..avatar = const Icon(
+          Icons.person_outline,
+          color: Colors.blue,
+          size: 24,
+        ),
+
       // 2. Date of birth criterion - Date range
       ChipDatesRangeController(
           name: "birthdate",
@@ -151,6 +186,11 @@ Map<String, dynamic> getCurrentCriteriaValues() {
           values["client"] = chip.value;
         }
         break;
+      case "client_single":
+        if (chip is ChipTextCompletionController<User>) {
+          values["client_single"] = chip.value;
+        }
+        break;
       case "birthdate":
         if (chip is ChipDatesRangeController) {
           values["birthdate"] = chip.value;
@@ -202,6 +242,16 @@ String getSearchSummary() {
     );
   } else {
     summary.writeln("Client: None");
+  }
+
+  // Client Single
+  final clientSingleValue = values["client_single"];
+  if (clientSingleValue != null && clientSingleValue.isNotEmpty) {
+    summary.writeln(
+      "Client (Single): ${clientSingleValue.map((u) => "${u.lastName} ${u.firstName}").join(", ")}",
+    );
+  } else {
+    summary.writeln("Client (Single): None");
   }
 
   // Date of birth

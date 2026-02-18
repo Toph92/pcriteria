@@ -17,8 +17,8 @@ class ChipAdd extends StatefulWidget {
 
 class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   final GlobalKey _btnKey = GlobalKey();
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntryPopup;
+  final OverlayPortalController _overlayPortalController =
+      OverlayPortalController();
   double initX = 0;
   double initY = 0;
   double chipWidth = 0;
@@ -27,18 +27,13 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   double width = 300;
   double height = 500;
 
-  RenderBox? _renderBox;
-  Offset? _position;
-
   List<ChipGroup> groups = [];
   List<String> _groupsNameFilterSelector = [];
   final List<ChipItemController> _chips = [];
 
   @override
   void dispose() {
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup?.dispose();
-    _overlayEntryPopup = null;
+    // _overlayPortalController.dispose(); // Not needed for OverlayPortalController?
     super.dispose();
   }
 
@@ -50,8 +45,46 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
+    return OverlayPortal.overlayChildLayoutBuilder(
+      controller: _overlayPortalController,
+      overlayChildBuilder: (BuildContext context, OverlayChildLayoutInfo info) {
+        final Offset anchorOffset = MatrixUtils.transformPoint(
+          info.childPaintTransform,
+          Offset.zero,
+        );
+        return Stack(
+          children: [
+            GestureDetector(
+              onTap: _closeOverlayPopup,
+              child: Container(color: Colors.black.withValues(alpha: 0.3)),
+            ),
+            Positioned(
+              left: anchorOffset.dx + widget.controller.popupXoffset,
+              top: anchorOffset.dy + info.childSize.height,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: width,
+                  height: height,
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: widget.controller.backgroundColor,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Stack(children: [body(setState), resizer(setState)]),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 2.0),
         child: IconButton.filled(
@@ -59,7 +92,7 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
           key: _btnKey,
           onPressed: () {
             if (_chips.isNotEmpty) {
-              _showOverlayPopup(context);
+              _showOverlayPopup();
             }
           },
           icon: const Icon(Icons.add),
@@ -134,62 +167,13 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
     return null;
   }
 
-  void _showOverlayPopup(BuildContext context) {
-    assert(context.mounted, "Context is not mounted in builder");
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup = null;
-
-    _getInputChipPosition();
-
-    _overlayEntryPopup = OverlayEntry(
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Stack(
-          children: [
-            GestureDetector(
-              onTap: _closeOverlayPopup,
-              child: Container(color: Colors.black.withValues(alpha: 0.3)),
-            ),
-            CompositedTransformFollower(
-              link: _layerLink,
-              offset: Offset(
-                widget.controller.popupXoffset,
-                widget.controller.chipHeight ?? 0,
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  width: width,
-                  height: height,
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: widget.controller.backgroundColor,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Stack(children: [body(setState), resizer(setState)]),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntryPopup!);
+  void _showOverlayPopup() {
+    _overlayPortalController.show();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 1), () {
         _updateHeights();
-        if (_overlayEntryPopup != null) {
-          _overlayEntryPopup!.markNeedsBuild();
-        }
-        super.setState(() {});
+        if (mounted) setState(() {});
       });
     });
   }
@@ -285,10 +269,10 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
                                   : widget.controller.backgroundColor,
                               child: Builder(
                                 builder: (context) {
-                                  assert(
-                                    context.mounted,
-                                    "Context is not mounted in builder",
-                                  );
+                                  // assert(
+                                  //   context.mounted,
+                                  //   "Context is not mounted in builder",
+                                  // );
                                   return ListTile(
                                     key: _chips[index].key_,
                                     horizontalTitleGap: 8,
@@ -298,10 +282,10 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
                                     ),
                                     dense: true,
                                     onTap: () {
-                                      assert(
+                                      /* assert(
                                         context.mounted,
                                         "Context is not mounted in builder",
-                                      );
+                                      ); */
                                       if (_chips.length <= index) {
                                         assert(
                                           false,
@@ -389,7 +373,7 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
                   .where((e) => e.displayed && !e.alwaysDisplayed)
                   .isNotEmpty)
                 IconButton(
-                  //tooltip: "Supprimer tous",
+                  tooltip: "Supprimer tous",
                   onPressed: () {
                     setState(() {
                       for (final element in _chips) {
@@ -405,7 +389,7 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
                 ),
               if (_chips.where((e) => e.hasValue()).isNotEmpty)
                 IconButton(
-                  //tooltip: "Effacer tous",
+                  tooltip: "Effacer tous",
                   onPressed: () {
                     setState(() {
                       widget.controller.clear();
@@ -428,19 +412,6 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   }
 
   void _closeOverlayPopup() {
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup = null;
-    _renderBox = null;
-    _position = null;
-  }
-
-  void _getInputChipPosition() {
-    _renderBox ??= _btnKey.currentContext?.findRenderObject() as RenderBox;
-    _position ??= _renderBox?.localToGlobal(Offset.zero);
-    final size = _renderBox?.size;
-    widget.controller.chipX = _position?.dx;
-    widget.controller.chipY = _position?.dy;
-    widget.controller.chipWidth = size?.width;
-    widget.controller.chipHeight = size?.height;
+    _overlayPortalController.hide();
   }
 }

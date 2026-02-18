@@ -5,21 +5,22 @@ import 'package:flutter/material.dart';
 /// User class to represent a client with autocomplete
 class User extends SearchEntry {
   @override
-  factory User.from(SearchEntry other) {
-    if (other is User) {
-      return other.copyWith();
-    }
-    return User(sID: other.sID, lastName: other.displaySelected);
+  factory User.from(User other) {
+    return other.copyWith();
   }
 
-  User({required super.sID, required this.lastName, this.firstName})
-    : initials = computeInitials(lastName, firstName),
-      super(
-        display: computeInitials(lastName, firstName),
-        txtValue:
-            "$lastName ${firstName ?? ''} ${computeInitials(lastName, firstName)}",
-        hoverDescription: "$lastName ${firstName ?? ''}",
-      );
+  User({
+    required super.sID,
+    required this.lastName,
+    this.firstName,
+    required this.isExternal,
+  }) : initials = computeInitials(lastName, firstName),
+       super(
+         display: computeInitials(lastName, firstName),
+         txtValue:
+             "$lastName ${firstName ?? ''} ${computeInitials(lastName, firstName)}",
+         hoverDescription: "$lastName ${firstName ?? ''}",
+       );
 
   static String computeInitials(String lastName, String? firstName) =>
       "${lastName.isNotEmpty ? lastName[0] : ''}${firstName != null && firstName.isNotEmpty ? firstName[0] : ''}"
@@ -28,6 +29,7 @@ class User extends SearchEntry {
   String? firstName;
   String lastName;
   String initials;
+  bool isExternal;
 
   @override
   String toString() {
@@ -48,9 +50,15 @@ class User extends SearchEntry {
 
   @override
   User copyWith() {
-    User newUser = User(sID: sID, firstName: firstName, lastName: lastName)
-      ..fuzzySearchResult = fuzzySearchResult
-      ..hoverDescription = hoverDescription;
+    User newUser =
+        User(
+            sID: sID,
+            firstName: firstName,
+            lastName: lastName,
+            isExternal: isExternal,
+          )
+          ..fuzzySearchResult = fuzzySearchResult
+          ..hoverDescription = hoverDescription;
 
     return newUser;
   }
@@ -68,7 +76,7 @@ class User extends SearchEntry {
             TextSpan(children: controller.hightLightChunksFound(sID)),
           ),
         ),
-        Flexible(
+        Expanded(
           child: Text.rich(
             TextSpan(
               children: [
@@ -80,6 +88,9 @@ class User extends SearchEntry {
             softWrap: true,
           ),
         ),
+        isExternal
+            ? Tooltip(message: 'External user', child: Icon(Icons.person))
+            : SizedBox.shrink(),
       ],
     );
   }
@@ -139,6 +150,7 @@ List<User> staticUsers =
                 .toRadixString(16),
             firstName: userData['first']!,
             lastName: userData['last']!,
+            isExternal: userData['last'] == 'DESBOIS' ? true : false,
           ),
         )
         .toList();

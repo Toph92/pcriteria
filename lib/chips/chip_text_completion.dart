@@ -74,12 +74,11 @@ class ChipTextCompletion extends StatefulWidget {
 
 class _ChipTextCompletionState extends State<ChipTextCompletion>
     with WidgetsBindingObserver {
-  StateSetter? _overlaySetState;
+  final OverlayPortalController _overlayPortalController =
+      OverlayPortalController();
   final GlobalKey _inputChipKey = GlobalKey();
   final GlobalKey _textKey = GlobalKey();
 
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntryPopup;
   String? hintMessage;
 
   // Variables pour le redimensionnement
@@ -94,9 +93,6 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
     WidgetsBinding.instance.removeObserver(this);
     widget.controller.focusNode.removeListener(_onFocusChange);
     widget.controller.removeListener(_refresh);
-    _overlaySetState = null;
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup = null;
     super.dispose();
   }
 
@@ -147,82 +143,29 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
   }
 
   void _refresh() {
-    _refreshOverlay();
     if (mounted) setState(() {});
   }
 
-  void _openOverlayPopup(BuildContext context) {
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup = null;
+  void _openOverlayPopup() {
     widget.controller.dataSourceFiltered = null;
     widget.controller._arCriteria = null;
 
     Future.delayed(const Duration(milliseconds: 50), () {
       widget.controller.focusNode.requestFocus();
     });
-    //widget.controller.focusNode.requestFocus();
 
-    _getInputChipPosition();
     widget.controller.updating = true;
     widget.controller.popupDisplayed = true;
-
-    _overlayEntryPopup = OverlayEntry(
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          _overlaySetState = setState;
-          return Stack(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  _closeOverlayPopup();
-                  widget.controller.updating = false;
-                },
-                child: Container(color: Colors.black.withValues(alpha: 0.3)),
-              ),
-              CompositedTransformFollower(
-                link: _layerLink,
-                offset: Offset(
-                  widget.controller.popupXoffset,
-                  widget.controller.chipHeight ?? 0,
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    width: _popupWidth,
-                    height: _popupHeight,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: widget.controller.popupBackgroundColor,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [_popupBody(setState), resizer(setState)],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntryPopup!);
+    _overlayPortalController.show();
+    _refresh();
   }
 
-  void _refreshOverlay() {
-    if (_overlayEntryPopup == null) return;
-    if (_overlaySetState != null) _overlaySetState!(() {});
-  }
+  /* void _refreshOverlay() {
+    // With OverlayPortal, calling setState on the widget rebuilds the overlay
+    if (mounted) setState(() {});
+  } */
 
-  Positioned resizer(StateSetter setState) {
+  Positioned resizer() {
     return Positioned(
       right: 0,
       bottom: 0,
@@ -313,7 +256,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
     }
   }
 
-  Widget _popupBody(StateSetter setState) {
+  Widget _popupBody() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -396,18 +339,17 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                                     widget.controller.maxEntries) {
                               widget.controller.instantMessage =
                                   "Critère ajouté";
-                              _refreshOverlay();
+                              _refresh();
                               widget.controller.focusNode.requestFocus();
                             } else {
                               _closeOverlayPopup();
                             }
-                            //_closeOverlayPopup();
                             widget.controller.dataSourceFiltered = null;
                             widget.controller._arCriteria = null;
                             widget.controller.textControleur.clear();
                             widget.controller.updating = false;
                             // Rafraîchir l'état du widget parent
-                            this.setState(() {});
+                            setState(() {});
                           },
                         ),
                       )
@@ -600,33 +542,55 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
   }
 
   void _closeOverlayPopup() {
-    if (_overlayEntryPopup == null && widget.controller.popupDisplayed) {
-      //widget.controller.updating = false;
-      return;
-    }
-
-    _overlayEntryPopup?.remove();
-    _overlayEntryPopup?.dispose();
-    _overlayEntryPopup = null;
     widget.controller.popupDisplayed = false;
-    //widget.controller.updating = false;
-  }
-
-  void _getInputChipPosition() {
-    final RenderBox renderBox =
-        _inputChipKey.currentContext?.findRenderObject() as RenderBox;
-    final position = renderBox.localToGlobal(Offset.zero);
-    final size = renderBox.size;
-    widget.controller.chipX = position.dx;
-    widget.controller.chipY = position.dy;
-    widget.controller.chipWidth = size.width;
-    widget.controller.chipHeight = size.height;
+    _overlayPortalController.hide();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
+    return OverlayPortal.overlayChildLayoutBuilder(
+      controller: _overlayPortalController,
+      overlayChildBuilder: (BuildContext context, OverlayChildLayoutInfo info) {
+        final Offset anchorOffset = MatrixUtils.transformPoint(
+          info.childPaintTransform,
+          Offset.zero,
+        );
+        return Stack(
+          children: [
+            GestureDetector(
+              onTap: () {
+                _closeOverlayPopup();
+                widget.controller.updating = false;
+              },
+              child: Container(color: Colors.black.withValues(alpha: 0.3)),
+            ),
+            Positioned(
+              left: anchorOffset.dx + widget.controller.popupXoffset,
+              top: anchorOffset.dy + info.childSize.height,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: _popupWidth,
+                  height: _popupHeight,
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: widget.controller.popupBackgroundColor,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Stack(children: [_popupBody(), resizer()]),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
       child: ChipDecorator(
         key: _inputChipKey,
         controller: widget.controller,
@@ -634,7 +598,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
           if (widget.controller.selectedItems.isEmpty ||
               widget.controller.selectedItems.length <
                   widget.controller.maxEntries) {
-            _openOverlayPopup(context);
+            _openOverlayPopup();
           }
         },
         child: widget.controller.selectedItems.isNotEmpty
@@ -817,6 +781,9 @@ class ChipTextCompletionController<T extends SearchEntry>
 
   /// Nombre maximum d'entrées à afficher
   int maxEntries = 1;
+
+  /// Mode texte simple (sans chips)
+  bool singleMode = false;
 
   void Function(List<T> values)? onSelected;
   List<SearchEntry> selectedItems = [];

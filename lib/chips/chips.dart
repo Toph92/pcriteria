@@ -7,6 +7,7 @@ import 'package:criteria/chips/chip_list.dart';
 import 'package:criteria/chips/chip_range.dart';
 import 'package:criteria/chips/chip_text.dart';
 import 'package:criteria/chips/chip_text_completion.dart';
+import 'package:criteria/chips/chip_text_completion_single.dart';
 import 'package:criteria/chips/config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ export 'chip_list_maker.dart';
 export 'chip_range.dart';
 export 'chip_text.dart';
 export 'chip_text_completion.dart';
+export 'chip_text_completion_single.dart';
 
 class ChipsCriteria extends StatefulWidget {
   const ChipsCriteria({
@@ -278,7 +280,9 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
         case ChipBooleanController():
           return ChipBoolean(controller: e);
         case ChipTextCompletionController<SearchEntry>():
-          return ChipTextCompletion(controller: e);
+          return e.singleMode
+              ? ChipTextCompletionSingle(controller: e)
+              : ChipTextCompletion(controller: e);
         case ChipRangeController():
           return ChipRange(controller: e);
 
