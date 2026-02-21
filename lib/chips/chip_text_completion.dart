@@ -91,14 +91,14 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    widget.controller.focusNode.removeListener(_onFocusChange);
+    widget.controller.focusNode?.removeListener(_onFocusChange);
     widget.controller.removeListener(_refresh);
     super.dispose();
   }
 
   @override
   void initState() {
-    widget.controller.focusNode.addListener(_onFocusChange);
+    widget.controller.focusNode?.addListener(_onFocusChange);
     WidgetsBinding.instance.addObserver(this);
 
     // Initialiser les dimensions du popup
@@ -133,8 +133,19 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
   }
 
   void _onFocusChange() async {
-    if (!widget.controller.focusNode.hasFocus &&
-        widget.controller.popupDisplayed == false) {
+    if (widget.controller.focusNode != null &&
+        !widget.controller.focusNode!.hasFocus) {
+      // Delay to allow onTap to set selectedFromList
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (!mounted) return;
+      if (widget.controller.focusNode != null &&
+          !widget.controller.focusNode!.hasFocus) {
+        if (widget.controller.popupDisplayed) {
+          _closeOverlayPopup();
+        } else {
+          await _validateSelection();
+        }
+      }
       Future.delayed(const Duration(milliseconds: 100), () {
         widget.controller.updating = false;
         _refresh();
@@ -146,12 +157,55 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
     if (mounted) setState(() {});
   }
 
+  Future<void> _validateSelection() async {
+    if (widget.controller.needSelectedItem &&
+        !widget.controller.selectedFromList) {
+      final text = widget.controller.textControleur.text;
+      if (text.isNotEmpty) {
+        if (text.length < widget.controller.minCharacterNeeded) {
+          widget.controller.textControleur.clear();
+          widget.controller.dataSourceFiltered = null;
+          widget.controller._arCriteria = null;
+          return;
+        }
+
+        // Wait for search to finish if in progress
+        int timeout = 0;
+        while (widget.controller.searching && timeout < 10) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          timeout++;
+        }
+        if (widget.controller.dataSourceFiltered != null &&
+            widget.controller.dataSourceFiltered!.isNotEmpty) {
+          final SearchEntry item = widget.controller.dataSourceFiltered!.first;
+          widget.controller.selectedItems.add(item);
+          widget.controller.onSelected?.call(widget.controller.selectedItems);
+          widget.controller.selectedFromList = true;
+          if (widget.controller.keepPopupOpen &&
+              widget.controller.selectedItems.length <
+                  widget.controller.maxEntries) {
+            widget.controller.instantMessage = "Critère ajouté";
+          }
+        }
+        widget.controller.textControleur.clear();
+        widget.controller.dataSourceFiltered = null;
+        widget.controller._arCriteria = null;
+      }
+    }
+  }
+
+  void _closeOverlayPopup() async {
+    await _validateSelection();
+    widget.controller.popupDisplayed = false;
+    _overlayPortalController.hide();
+  }
+
   void _openOverlayPopup() {
     widget.controller.dataSourceFiltered = null;
     widget.controller._arCriteria = null;
 
     Future.delayed(const Duration(milliseconds: 50), () {
-      widget.controller.focusNode.requestFocus();
+      widget.controller.focusNode?.requestFocus();
     });
 
     widget.controller.updating = true;
@@ -340,7 +394,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                               widget.controller.instantMessage =
                                   "Critère ajouté";
                               _refresh();
-                              widget.controller.focusNode.requestFocus();
+                              widget.controller.focusNode?.requestFocus();
                             } else {
                               _closeOverlayPopup();
                             }
@@ -541,11 +595,6 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
     );
   }
 
-  void _closeOverlayPopup() {
-    widget.controller.popupDisplayed = false;
-    _overlayPortalController.hide();
-  }
-
   @override
   Widget build(BuildContext context) {
     return OverlayPortal.overlayChildLayoutBuilder(
@@ -659,9 +708,9 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
               widget.controller.updating = false;
               widget.controller.displayed = false;
               _refresh();
-              widget.controller.focusNode.requestFocus();
+              widget.controller.focusNode?.requestFocus();
               /* Future.delayed(const Duration(milliseconds: 100), () {
-                widget.controller.focusNode.requestFocus();
+               widget.controller.focusNode?.requestFocus();
               }); */
             },
           ),
@@ -758,7 +807,7 @@ class ChipTextCompletionController<T extends SearchEntry>
           (keepPopupOpen == false && maxEntries == 1)),
       "maxEntries doit être supérieur à 1 si keepPopupOpen est vrai",
     );
-    _focusNode = FocusNode()..addListener(_onFocusChange);
+    focusNode = FocusNode()..addListener(_onFocusChange);
     textControleur = TextEditingController();
     cacheManager = CacheManager<T>();
     popupMinWidth = 250;
@@ -784,6 +833,10 @@ class ChipTextCompletionController<T extends SearchEntry>
 
   /// Mode texte simple (sans chips)
   bool singleMode = false;
+
+  /// Need selected item
+  bool needSelectedItem =
+      false; // si vrai, il faut sélectionner un item avant de valider, sinon c'est vide
 
   void Function(List<T> values)? onSelected;
   List<SearchEntry> selectedItems = [];
@@ -814,9 +867,6 @@ class ChipTextCompletionController<T extends SearchEntry>
   //late final TextEditingController _textControleur;
   //TextEditingController get textControleur => _textControleur;
   late final TextEditingController textControleur;
-
-  late final FocusNode _focusNode;
-  FocusNode get focusNode => _focusNode;
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
@@ -1102,7 +1152,7 @@ class ChipTextCompletionController<T extends SearchEntry>
   }
 
   void _onFocusChange() {
-    if (!_focusNode.hasFocus && popupDisplayed == false) {
+    if (focusNode != null && !focusNode!.hasFocus && popupDisplayed == false) {
       updating = false;
       notifyListeners();
     }
@@ -1110,7 +1160,6 @@ class ChipTextCompletionController<T extends SearchEntry>
 
   @override
   void dispose() {
-    _focusNode.dispose();
     textControleur.dispose();
     super.dispose();
   }
@@ -1124,6 +1173,7 @@ class ChipTextCompletionController<T extends SearchEntry>
   void clean() {
     textControleur.clear();
     selectedItems.clear();
+    selectedFromList = false;
     updating = false;
     notifyListeners();
   }

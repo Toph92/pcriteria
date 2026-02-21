@@ -90,7 +90,9 @@ class ChipDateController extends ChipItemController {
     super.avatar = const Icon(Icons.calendar_today, size: 24),
     super.chipType = ChipType.date,
     super.onEnter,
-  });
+  }) {
+    focusNode = FocusNode();
+  }
 
   DateTime? _date;
 
@@ -101,8 +103,6 @@ class ChipDateController extends ChipItemController {
       notifyListeners();
     }
   }
-
-  FocusNode focusNode = FocusNode();
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
@@ -148,11 +148,5 @@ class ChipDateController extends ChipItemController {
       "value": _date?.toIso8601String(),
       "displayed": displayed,
     };
-  }
-
-  @override
-  void dispose() {
-    focusNode.dispose();
-    super.dispose();
   }
 }

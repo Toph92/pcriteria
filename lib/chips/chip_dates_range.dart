@@ -15,7 +15,7 @@ class ChipDatesRange extends StatefulWidget {
 class _ChipDatesRangeState extends State<ChipDatesRange> {
   @override
   void dispose() {
-    widget.controller.focusNode.removeListener(_onFocusChange);
+    widget.controller.focusNode?.removeListener(_onFocusChange);
     widget.controller.removeListener(_refresh);
     super.dispose();
   }
@@ -23,12 +23,13 @@ class _ChipDatesRangeState extends State<ChipDatesRange> {
   @override
   void initState() {
     super.initState();
-    widget.controller.focusNode.addListener(_onFocusChange);
+    widget.controller.focusNode?.addListener(_onFocusChange);
     widget.controller.addListener(_refresh);
   }
 
   void _onFocusChange() async {
-    if (!widget.controller.focusNode.hasFocus) {
+    if (widget.controller.focusNode != null &&
+        !widget.controller.focusNode!.hasFocus) {
       Future.delayed(const Duration(milliseconds: 100), () {
         widget.controller.updating = false;
         _refresh();
@@ -109,7 +110,9 @@ class ChipDatesRangeController extends ChipItemController {
     super.avatar = const Icon(Icons.date_range, size: 24),
     super.chipType = ChipType.datesRange,
     super.onEnter,
-  });
+  }) {
+    focusNode = FocusNode();
+  }
 
   DateTimeRange? _dateRange;
 
@@ -120,8 +123,6 @@ class ChipDatesRangeController extends ChipItemController {
       notifyListeners();
     }
   }
-
-  FocusNode focusNode = FocusNode();
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
@@ -182,11 +183,5 @@ class ChipDatesRangeController extends ChipItemController {
           : null,
       "displayed": displayed,
     };
-  }
-
-  @override
-  void dispose() {
-    focusNode.dispose();
-    super.dispose();
   }
 }

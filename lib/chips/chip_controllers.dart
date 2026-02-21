@@ -56,7 +56,7 @@ abstract class ChipItemController with ChangeNotifier {
   ChipGroup? group;
 
   bool _displayed = false;
-  bool get displayed => alwaysDisplayed ? true : _displayed;
+  bool get displayed => (alwaysDisplayed || required) ? true : _displayed;
   set displayed(bool value) {
     if (value != _displayed) {
       _displayed = value;
@@ -65,6 +65,7 @@ abstract class ChipItemController with ChangeNotifier {
   }
 
   bool alwaysDisplayed = false;
+  bool required = false; // if true, the field is mandatory
   double editingWidth = 200;
   double? popupWidth;
   double? popupHeight;
@@ -182,6 +183,17 @@ abstract class ChipItemController with ChangeNotifier {
     }
   }
 
+  bool get hasError {
+    if (!required) return false;
+    if (!hasValue()) return true;
+    final val = value;
+    if (val == null) return true;
+    if (val is String && val.trim().isEmpty) return true;
+    if (val is num && val == 0) return true;
+    if (val is List && val.isEmpty) return true;
+    return false;
+  }
+
   bool hasValue();
   void clean();
   void remove() {
@@ -227,10 +239,17 @@ abstract class ChipItemController with ChangeNotifier {
     return true;
   }
 
+  FocusNode? focusNode;
   GlobalKey? key_; // for internal use only
 
   void notify() {
     notifyListeners(); // to force update from outside
+  }
+
+  @override
+  void dispose() {
+    focusNode?.dispose();
+    super.dispose();
   }
 }
 

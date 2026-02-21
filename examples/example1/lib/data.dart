@@ -69,13 +69,6 @@ class User extends SearchEntry {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 4,
       children: [
-        Container(
-          color: Colors.grey.shade400,
-          width: 75,
-          child: Text.rich(
-            TextSpan(children: controller.hightLightChunksFound(sID)),
-          ),
-        ),
         Expanded(
           child: Text.rich(
             TextSpan(
@@ -96,10 +89,10 @@ class User extends SearchEntry {
   }
 
   @override
-  set displaySelected(String value) => initials;
+  set displaySelected(String value) => '$lastName ${firstName ?? ''}';
 
   @override
-  String get displaySelected => initials;
+  String get displaySelected => '$lastName ${firstName ?? ''}';
 }
 
 /// Static list of users for autocomplete

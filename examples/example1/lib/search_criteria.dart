@@ -90,9 +90,11 @@ void initializeSearchCriteria() {
               },
         )
         ..singleMode = true
+        ..needSelectedItem = true
+        ..required = true
         ..minCharacterNeeded = 2
-        ..popupWidth = 350
-        ..popupHeight = 400
+        ..popupWidth = 250
+        ..popupHeight = 300
         ..avatar = const Icon(
           Icons.person_outline,
           color: Colors.blue,

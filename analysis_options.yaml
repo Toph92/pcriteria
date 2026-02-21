@@ -36,7 +36,6 @@ linter:
     - cascade_invocations # Favorise l'utilisation de l'opérateur de cascade (`..`) pour des appels successifs.
     - empty_catches # Évite les blocs `catch` vides.
     - hash_and_equals # Implique de surcharger `==` et `hashCode` ensemble.
-    - invariant_booleans # Détecte les expressions booléennes non constantes dans des endroits où une constante est requise.
     - no_leading_underscores_for_local_identifiers # Évite les underscores en début de noms pour les variables locales.
     - null_closures # Évite les closures nullables.
     - prefer_collection_literals # Utilise des littéraux pour les collections.

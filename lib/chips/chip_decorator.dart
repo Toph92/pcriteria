@@ -28,93 +28,6 @@ class ChipDecorator extends StatelessWidget {
     child: Icon(Icons.recycling, color: Colors.grey, size: _iconSize),
   );
 
-  /*@override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2.0),
-      child: Opacity(
-        opacity: controller.disable ? 0.5 : 1.0,
-        child: IntrinsicWidth(
-          child: Container(
-            color: Colors.amber,
-            // We keep the constraints from ChipText as a baseline.
-            // If other chips need different constraints, we might need to parameterize this.
-            // But ChipText had minWidth 100, maxWidth 200.
-            // Let's see if we can make it flexible.
-            // For now, I will use the same constraints as ChipText because the user wants "Comme ChipText".
-            height: chipHeightSize,
-            /*constraints: const BoxConstraints(
-              minWidth: 100,
-              maxWidth: 800,
-              //minHeight: 52,
-            ),*/
-            child: Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText:
-                      (controller.updating || controller.hasValue()) &&
-                          !controller.hideLabelIfNotEmpty
-                      ? controller.label
-                      : null,
-                  labelStyle: controller.labelStyle,
-                  enabled: !controller.disable,
-                  filled: true,
-                  fillColor: controller.disable
-                      ? Colors.grey.shade300
-                      : controller.backgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
-                  ),
-                  isDense: true,
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(8.0),
-                  onTap: controller.disable ? null : onTap,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Avatar/icône
-                      if (!controller.hideAvatar && controller.avatar != null)
-                        Tooltip(
-                          message: controller.comments ?? '',
-                          child: controller.avatar,
-                        ),
-
-                      // Contenu principal
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4, left: 6),
-                        child: SizedBox(
-                          height: double.infinity,
-                          child: Center(child: child),
-                        ),
-                      ),
-                      const SizedBox(width: 2),
-                      if (actionButtons != null) actionButtons!,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-  */
   @override
   Widget build(BuildContext context) {
     final Widget? effectiveActionButtons =
@@ -190,7 +103,9 @@ class ChipDecorator extends StatelessWidget {
               backgroundColor: controller.disable
                   ? Colors.grey.shade300
                   : controller.backgroundColor,
-              borderColor: Colors.grey.shade700,
+              borderColor: controller.hasError
+                  ? Colors.red
+                  : Colors.grey.shade700,
               child: chipContent,
             ),
           ),
@@ -221,6 +136,7 @@ class ChipDecorator extends StatelessWidget {
           ? null
           : () {
               controller.clean();
+              controller.focusNode?.requestFocus();
             },
       onDelete: controller.disable
           ? null

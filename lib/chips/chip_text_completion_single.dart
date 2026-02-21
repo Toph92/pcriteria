@@ -28,7 +28,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   @override
   void initState() {
     super.initState();
-    widget.controller.focusNode.addListener(_onFocusChange);
+    widget.controller.focusNode?.addListener(_onFocusChange);
     widget.controller.textControleur.addListener(_onTextChanged);
     widget.controller.addListener(_refresh);
     WidgetsBinding.instance.addObserver(this);
@@ -43,21 +43,72 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    widget.controller.focusNode.removeListener(_onFocusChange);
+    widget.controller.focusNode?.removeListener(_onFocusChange);
     widget.controller.textControleur.removeListener(_onTextChanged);
     widget.controller.removeListener(_refresh);
     super.dispose();
   }
 
-  void _onFocusChange() {
-    if (!widget.controller.focusNode.hasFocus &&
-        widget.controller.popupDisplayed == false) {
+  void _onFocusChange() async {
+    if (widget.controller.focusNode != null &&
+        !widget.controller.focusNode!.hasFocus) {
+      // Delay to allow onTap to set selectedFromList
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (!mounted) return;
+      if (widget.controller.focusNode != null &&
+          !widget.controller.focusNode!.hasFocus) {
+        if (widget.controller.popupDisplayed) {
+          _closeOverlayPopup();
+        } else {
+          await _validateSelection();
+        }
+      }
       widget.controller.updating = false;
       _refresh();
     }
   }
 
+  Future<void> _validateSelection() async {
+    if (widget.controller.needSelectedItem &&
+        !widget.controller.selectedFromList) {
+      final text = widget.controller.textControleur.text;
+      if (text.isNotEmpty) {
+        if (text.length < widget.controller.minCharacterNeeded) {
+          widget.controller.textControleur.clear();
+          widget.controller.selectedItems.clear();
+          widget.controller.onSelected?.call([]);
+          return;
+        }
+
+        // Wait for search to finish if in progress
+        int timeout = 0;
+        while (widget.controller.searching && timeout < 10) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          timeout++;
+        }
+        if (widget.controller.dataSourceFiltered != null &&
+            widget.controller.dataSourceFiltered!.isNotEmpty) {
+          final item = widget.controller.dataSourceFiltered!.first;
+          widget.controller.textControleur.text = item.displaySelected;
+          widget.controller.selectedItems = [item];
+          widget.controller.selectedFromList = true;
+          widget.controller.onSelected?.call(
+            widget.controller.selectedItems.cast<SearchEntry>() as dynamic,
+          );
+        } else {
+          widget.controller.textControleur.clear();
+          widget.controller.selectedItems.clear();
+          widget.controller.onSelected?.call([]);
+        }
+      } else {
+        widget.controller.selectedItems.clear();
+        widget.controller.onSelected?.call([]);
+      }
+    }
+  }
+
   void _onTextChanged() {
+    widget.controller.selectedFromList = false;
     final text = widget.controller.textControleur.text;
     if (text.length >= widget.controller.minCharacterNeeded) {
       if (!widget.controller.popupDisplayed) {
@@ -92,7 +143,8 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
     _updateResults();
   }
 
-  void _closeOverlayPopup() {
+  void _closeOverlayPopup() async {
+    await _validateSelection();
     widget.controller.popupDisplayed = false;
     widget.controller.updating = false;
     _overlayPortalController.hide();
@@ -165,6 +217,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
                     widget.controller.textControleur.text =
                         item.displaySelected;
                     widget.controller.selectedItems = [item];
+                    widget.controller.selectedFromList = true;
 
                     widget.controller.onSelected?.call(
                       widget.controller.selectedItems.cast<SearchEntry>()

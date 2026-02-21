@@ -16,19 +16,20 @@ class ChipText extends StatefulWidget {
 class _ChipTextState extends State<ChipText> {
   @override
   void dispose() {
-    widget.controller.focusNode.removeListener(_onFocusChange);
+    widget.controller.focusNode?.removeListener(_onFocusChange);
     super.dispose();
   }
 
   @override
   void initState() {
-    widget.controller.focusNode.addListener(_onFocusChange);
+    widget.controller.focusNode?.addListener(_onFocusChange);
     widget.controller.addListener(_refresh);
     super.initState();
   }
 
   void _onFocusChange() async {
-    if (!widget.controller.focusNode.hasFocus) {
+    if (widget.controller.focusNode != null &&
+        !widget.controller.focusNode!.hasFocus) {
       Future.delayed(const Duration(milliseconds: 100), () {
         widget.controller.updating = false;
         _refresh();
@@ -46,7 +47,7 @@ class _ChipTextState extends State<ChipText> {
       controller: widget.controller,
       onTap: () {
         widget.controller.updating = true;
-        widget.controller.focusNode.requestFocus();
+        widget.controller.focusNode?.requestFocus();
       },
       // actually if I remove the line "actionButtons: ...", it defaults to null.
       child: widget.controller.updating
@@ -99,7 +100,7 @@ class ChipTextController extends ChipItemController {
     super.chipType = ChipType.text,
     super.onEnter,
   }) {
-    _focusNode = FocusNode()..addListener(_onFocusChange);
+    focusNode = FocusNode()..addListener(_onFocusChange);
     _textController = TextEditingController();
   }
 
@@ -107,9 +108,6 @@ class ChipTextController extends ChipItemController {
 
   late final TextEditingController _textController;
   TextEditingController get textControleur => _textController;
-
-  late final FocusNode _focusNode;
-  FocusNode get focusNode => _focusNode;
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
@@ -120,13 +118,12 @@ class ChipTextController extends ChipItemController {
 
   @override
   void dispose() {
-    _focusNode.dispose();
     _textController.dispose();
     super.dispose();
   }
 
   void _onFocusChange() {
-    if (!_focusNode.hasFocus) {
+    if (focusNode != null && !focusNode!.hasFocus) {
       updating = false;
       notifyListeners();
     }
