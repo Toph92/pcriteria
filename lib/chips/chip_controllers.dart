@@ -66,7 +66,7 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool alwaysDisplayed = false;
   bool required = false; // if true, the field is mandatory
-  double editingWidth = 200;
+  double? editingWidth;
   double? popupWidth;
   double? popupHeight;
 

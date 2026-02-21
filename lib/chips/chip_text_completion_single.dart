@@ -363,9 +363,8 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
       child: ChipDecorator(
         key: _chipKey,
         controller: widget.controller,
-        child: SizedBox(
-          width: widget.controller.editingWidth,
-          child: Padding(
+        child: () {
+          final inputField = Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: TextFormField(
               controller: widget.controller.textControleur,
@@ -378,8 +377,17 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
                 hintStyle: widget.controller.emptyLabelStyle,
               ),
             ),
-          ),
-        ),
+          );
+
+          if (widget.controller.editingWidth != null) {
+            return SizedBox(
+              width: widget.controller.editingWidth,
+              child: inputField,
+            );
+          } else {
+            return Expanded(child: inputField);
+          }
+        }(),
       ),
     );
   }
