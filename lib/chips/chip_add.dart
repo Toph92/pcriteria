@@ -106,11 +106,7 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   }
 
   void initChips() {
-    for (final element in _chips) {
-      if (element.group == null) {
-        throw Exception("Chip ${element.name} has no group");
-      }
-    }
+    // Standalone chips are now allowed.
 
     _groupsNameFilterSelector =
         widget.groupsFilterSelector?.map((e) => e.name).toList() ?? [];
@@ -118,21 +114,23 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
       ..addAll(
         widget.controller.chips.where(
           (e) =>
+              e.group == null ||
               _groupsNameFilterSelector.contains(e.group!.name) ||
               _groupsNameFilterSelector.isEmpty,
         ),
       )
-      ..sort((a, b) => a.group!.order.compareTo(b.order))
       ..sort((a, b) {
-        if (a.group != b.group) {
-          return a.group!.order.compareTo(b.order);
+        if (a.group == b.group) {
+          return a.order.compareTo(b.order);
         }
-        return a.order.compareTo(b.order);
+        if (a.group == null) return 1; // Standalone at the end
+        if (b.group == null) return -1;
+        return a.group!.order.compareTo(b.group!.order);
       });
 
     for (final element in _chips) {
       element.key_ ??= GlobalKey();
-      if (!groups.contains(element.group)) {
+      if (element.group != null && !groups.contains(element.group)) {
         groups.add(element.group!);
       }
     }
@@ -143,17 +141,21 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
     ChipGroup? lastGroup;
 
     for (final element in _chips) {
-      if (element.group != lastGroup) {
+      if (element.group != null && element.group != lastGroup) {
         group = groups.firstWhere(
           (g) => g.name == element.group!.name,
           orElse: () {
             throw Exception("Group not found");
           },
         )..height_ = 0.0;
+      } else if (element.group == null) {
+        group = null; // Don't track height for standalone in group bars
       }
-      assert(group != null, "Group is null");
-      group?.height_ = group.height_! + (_getHeight(element) ?? 0.0);
-      lastGroup = group;
+
+      if (group != null) {
+        group.height_ = group.height_! + (_getHeight(element) ?? 0.0);
+      }
+      lastGroup = element.group;
     }
   }
 

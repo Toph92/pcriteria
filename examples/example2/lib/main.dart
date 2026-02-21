@@ -135,11 +135,22 @@ class _CombinedExampleState extends State<CombinedExample> {
                   }
                 },
           )
-          ..fuzzySearchStep = 1
+          /*..fuzzySearchStep = 1
           ..maxResults = 100
           ..alwaysDisplayed = true
           ..comments = "Autocompletion de clients"
-          ..avatar = null
+          ..avatar = null*/
+          ..singleMode = true
+          ..needSelectedItem = true
+          ..required = true
+          ..minCharacterNeeded = 2
+          ..popupWidth = 250
+          ..popupHeight = 300
+          ..avatar = const Icon(
+            Icons.person_outline,
+            color: Colors.blue,
+            size: 24,
+          )
           /*..popupHeaderItems = [
             PopupHeaderControllerItem(key: 'id', label: "Code"),
             PopupHeaderControllerItem(

@@ -120,7 +120,8 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
         .where(
           (element) =>
               element.displayed &&
-              (_groupsNameFilterDisplay.contains(element.group!.name) ||
+              (element.group == null ||
+                  _groupsNameFilterDisplay.contains(element.group!.name) ||
                   _groupsNameFilterDisplay.isEmpty),
         )
         .toList();

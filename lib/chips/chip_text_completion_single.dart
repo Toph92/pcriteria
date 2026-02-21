@@ -24,6 +24,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   double _initY = 0;
   late double _popupWidth;
   late double _popupHeight;
+  bool _isResizing = false;
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
       // Delay to allow onTap to set selectedFromList
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
+      if (_isResizing) return;
       if (widget.controller.focusNode != null &&
           !widget.controller.focusNode!.hasFocus) {
         if (widget.controller.popupDisplayed) {
@@ -158,7 +160,11 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
       child: MouseRegion(
         cursor: SystemMouseCursors.resizeDownRight,
         child: GestureDetector(
+          onPanDown: (details) {
+            _isResizing = true;
+          },
           onPanStart: (details) {
+            _isResizing = true;
             _initX = details.globalPosition.dx;
             _initY = details.globalPosition.dy;
           },
@@ -178,6 +184,14 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
                 widget.controller.popupMaxHeight,
               );
             });
+          },
+          onPanEnd: (details) {
+            _isResizing = false;
+            widget.controller.focusNode?.requestFocus();
+          },
+          onPanCancel: () {
+            _isResizing = false;
+            widget.controller.focusNode?.requestFocus();
           },
           child: SizedBox(
             width: 20,

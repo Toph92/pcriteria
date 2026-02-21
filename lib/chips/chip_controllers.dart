@@ -321,7 +321,7 @@ class ChipsController with ChipsPoupAttributs, ChangeNotifier {
         ..addListener(notifyListeners)
         ..parentOnEnter = onEnter;
       assert(map[chip.name] == null, "Duplicate chip name: ${chip.name}");
-      assert(chip.group != null, "Chip group is null: ${chip.name}");
+      // assert(chip.group != null, "Chip group is null: ${chip.name}");
       map[chip.name] = (map[chip.name] ?? 0) + 1;
     }
     notifyListeners();

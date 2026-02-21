@@ -1,5 +1,6 @@
 import 'package:criteria/chips/chip_controllers.dart';
 import 'package:criteria/chips/chip_decorator.dart';
+import 'package:criteria/chips/chip_text_completion_single.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -63,16 +64,31 @@ class CacheManager<T> {
   }
 }
 
-class ChipTextCompletion extends StatefulWidget {
+class ChipTextCompletion extends StatelessWidget {
   const ChipTextCompletion({required this.controller, super.key});
 
   final ChipTextCompletionController controller;
 
   @override
-  State<ChipTextCompletion> createState() => _ChipTextCompletionState();
+  Widget build(BuildContext context) {
+    if (controller.singleMode) {
+      return ChipTextCompletionSingle(controller: controller);
+    }
+    return _ChipTextCompletionMulti(controller: controller);
+  }
 }
 
-class _ChipTextCompletionState extends State<ChipTextCompletion>
+class _ChipTextCompletionMulti extends StatefulWidget {
+  const _ChipTextCompletionMulti({required this.controller});
+
+  final ChipTextCompletionController controller;
+
+  @override
+  State<_ChipTextCompletionMulti> createState() =>
+      _ChipTextCompletionMultiState();
+}
+
+class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
     with WidgetsBindingObserver {
   final OverlayPortalController _overlayPortalController =
       OverlayPortalController();
@@ -87,6 +103,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
   late double _popupWidth;
   late double _popupHeight;
   final GlobalKey _wrapKey = GlobalKey();
+  bool _isResizing = false;
 
   @override
   void dispose() {
@@ -138,6 +155,7 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
       // Delay to allow onTap to set selectedFromList
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
+      if (_isResizing) return;
       if (widget.controller.focusNode != null &&
           !widget.controller.focusNode!.hasFocus) {
         if (widget.controller.popupDisplayed) {
@@ -226,7 +244,11 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
       child: MouseRegion(
         cursor: SystemMouseCursors.resizeDownRight,
         child: GestureDetector(
+          onPanDown: (details) {
+            _isResizing = true;
+          },
           onPanStart: (details) {
+            _isResizing = true;
             _initX = details.globalPosition.dx;
             _initY = details.globalPosition.dy;
           },
@@ -246,6 +268,14 @@ class _ChipTextCompletionState extends State<ChipTextCompletion>
                 widget.controller.popupMaxHeight,
               );
             });
+          },
+          onPanEnd: (details) {
+            _isResizing = false;
+            widget.controller.focusNode?.requestFocus();
+          },
+          onPanCancel: () {
+            _isResizing = false;
+            widget.controller.focusNode?.requestFocus();
           },
           child: SizedBox(
             width: 20,
@@ -810,8 +840,8 @@ class ChipTextCompletionController<T extends SearchEntry>
     focusNode = FocusNode()..addListener(_onFocusChange);
     textControleur = TextEditingController();
     cacheManager = CacheManager<T>();
-    popupMinWidth = 250;
-    popupMinHeight = 300;
+    popupMinWidth = 100;
+    popupMinHeight = 100;
   }
 
   // Nouvelles propriétés pour la completion de texte
