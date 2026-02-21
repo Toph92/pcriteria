@@ -110,6 +110,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   }
 
   void _onTextChanged() {
+    if (widget.controller.programmaticUpdate) return;
     widget.controller.selectedFromList = false;
     final text = widget.controller.textControleur.text;
     if (text.length >= widget.controller.minCharacterNeeded) {

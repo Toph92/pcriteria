@@ -62,6 +62,7 @@ class ChipBooleanController extends ChipItemController {
   bool _value = false;
 
   late final FocusNode _focusNode;
+  @override
   FocusNode get focusNode => _focusNode;
 
   TextStyle textStyle = const TextStyle(

@@ -251,6 +251,20 @@ class _CombinedExampleState extends State<CombinedExample> {
                   },
                   child: const Text('Valider Clients'),
                 ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _clientController.value = [
+                        User(
+                          sID: 'COX39',
+                          firstName: 'Christophe',
+                          lastName: 'DESBOIS',
+                        ),
+                      ];
+                    });
+                  },
+                  child: const Text('Set value'),
+                ),
               ],
             ),
             const SizedBox(height: 20),

@@ -873,6 +873,7 @@ class ChipTextCompletionController<T extends SearchEntry>
   int _numRequest = 0;
   int _lastNumRequest = 0;
   bool _searching = false;
+  bool programmaticUpdate = false;
 
   bool get searching => _searching;
   /* set searching(bool value) {
@@ -1215,6 +1216,16 @@ class ChipTextCompletionController<T extends SearchEntry>
   set value(dynamic newValue) {
     if (newValue is List) {
       selectedItems = newValue.cast<SearchEntry>().toList();
+      displayed = selectedItems.isNotEmpty;
+      selectedFromList = selectedItems.isNotEmpty;
+      // sync le textControleur pour le mode singleMode
+      programmaticUpdate = true;
+      if (selectedItems.isNotEmpty) {
+        textControleur.text = selectedItems.first.displaySelected;
+      } else {
+        textControleur.clear();
+      }
+      programmaticUpdate = false;
       updating = false;
       notifyListeners();
     } else {
