@@ -404,7 +404,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
               child: inputField,
             );
           }
-          return inputField;
+          return Expanded(child: inputField);
         }(),
       ),
     );
