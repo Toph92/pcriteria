@@ -51,22 +51,32 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   }
 
   void _onFocusChange() async {
-    if (widget.controller.focusNode != null &&
-        !widget.controller.focusNode!.hasFocus) {
+    if (widget.controller.focusNode == null) return;
+
+    if (!widget.controller.focusNode!.hasFocus) {
       // Delay to allow onTap to set selectedFromList
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
       if (_isResizing) return;
-      if (widget.controller.focusNode != null &&
-          !widget.controller.focusNode!.hasFocus) {
+      if (!widget.controller.focusNode!.hasFocus) {
         if (widget.controller.popupDisplayed) {
           _closeOverlayPopup();
         } else {
           await _validateSelection();
         }
+        widget.controller.updating = false;
+        _refresh();
       }
-      widget.controller.updating = false;
-      _refresh();
+    } else {
+      // Gain focus
+      if (widget.controller.minCharacterNeeded == 0 &&
+          !widget.controller.popupDisplayed) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        if (!mounted) return;
+        if (widget.controller.focusNode?.hasFocus ?? false) {
+          _openOverlayPopup();
+        }
+      }
     }
   }
 
@@ -364,6 +374,14 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
       child: ChipDecorator(
         key: _chipKey,
         controller: widget.controller,
+        onTap: () {
+          if (widget.controller.minCharacterNeeded == 0 &&
+              !widget.controller.popupDisplayed) {
+            _openOverlayPopup();
+          } else {
+            widget.controller.focusNode?.requestFocus();
+          }
+        },
         child: () {
           final inputField = Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),

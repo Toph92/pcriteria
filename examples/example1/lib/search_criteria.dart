@@ -41,6 +41,7 @@ void initializeSearchCriteria() {
                 return (filteredUsers, null);
               },
         )
+        ..minCharacterNeeded = 2
         ..fuzzySearchStep = 1
         ..maxResults = 20
         ..popupWidth = 300

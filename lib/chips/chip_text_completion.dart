@@ -150,24 +150,32 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   }
 
   void _onFocusChange() async {
-    if (widget.controller.focusNode != null &&
-        !widget.controller.focusNode!.hasFocus) {
+    if (widget.controller.focusNode == null) return;
+
+    if (!widget.controller.focusNode!.hasFocus) {
       // Delay to allow onTap to set selectedFromList
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
       if (_isResizing) return;
-      if (widget.controller.focusNode != null &&
-          !widget.controller.focusNode!.hasFocus) {
+      if (!widget.controller.focusNode!.hasFocus) {
         if (widget.controller.popupDisplayed) {
           _closeOverlayPopup();
         } else {
           await _validateSelection();
         }
-      }
-      Future.delayed(const Duration(milliseconds: 100), () {
         widget.controller.updating = false;
         _refresh();
-      });
+      }
+    } else {
+      // Gain focus
+      if (widget.controller.minCharacterNeeded == 0 &&
+          !widget.controller.popupDisplayed) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        if (!mounted) return;
+        if (widget.controller.focusNode?.hasFocus ?? false) {
+          _openOverlayPopup();
+        }
+      }
     }
   }
 
@@ -229,7 +237,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
     widget.controller.updating = true;
     widget.controller.popupDisplayed = true;
     _overlayPortalController.show();
-    _refresh();
+    _updateResults();
   }
 
   /* void _refreshOverlay() {
@@ -947,7 +955,11 @@ class ChipTextCompletionController<T extends SearchEntry>
         .toList();
 
     if (_arCriteria == null || _arCriteria!.isEmpty) {
-      return;
+      if (minCharacterNeeded > 0) {
+        return;
+      }
+      // If minCharacterNeeded == 0, we continue with empty criteria (null)
+      _arCriteria = null;
     }
 
     try {
