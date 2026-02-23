@@ -403,9 +403,8 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
               width: widget.controller.editingWidth,
               child: inputField,
             );
-          } else {
-            return Expanded(child: inputField);
           }
+          return inputField;
         }(),
       ),
     );
