@@ -134,7 +134,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   }
 
   @override
-  void didUpdateWidget(covariant ChipTextCompletion oldWidget) {
+  void didUpdateWidget(covariant _ChipTextCompletionMulti oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
       oldWidget.controller.focusNode?.removeListener(_onFocusChange);
@@ -167,6 +167,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   }
 
   void _onFocusChange() async {
+    if (!mounted) return;
     if (widget.controller.focusNode == null) return;
 
     if (!widget.controller.focusNode!.hasFocus) {
@@ -244,6 +245,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   }
 
   void _openOverlayPopup() {
+    if (!mounted) return;
     widget.controller.dataSourceFiltered = null;
     widget.controller._arCriteria = null;
 

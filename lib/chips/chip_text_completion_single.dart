@@ -72,6 +72,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   }
 
   void _onFocusChange() async {
+    if (!mounted) return;
     if (widget.controller.focusNode == null) return;
 
     if (!widget.controller.focusNode!.hasFocus) {
@@ -171,6 +172,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   }
 
   void _openOverlayPopup() {
+    if (!mounted) return;
     widget.controller.updating = true;
     widget.controller.popupDisplayed = true;
     _overlayPortalController.show();
