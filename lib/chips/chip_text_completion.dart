@@ -109,6 +109,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     widget.controller.focusNode?.removeListener(_onFocusChange);
+    widget.controller.textControleur.removeListener(_onTextChanged);
     widget.controller.removeListener(_refresh);
     super.dispose();
   }
@@ -119,22 +120,38 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
     WidgetsBinding.instance.addObserver(this);
 
     // Initialiser les dimensions du popup
-    if (widget.controller.popupWidth != null) {
-      _popupWidth = widget.controller.popupWidth!;
-    } else {
-      _popupWidth = widget.controller.popupInitWidth * 1.8; // bidouille
-    }
+    _popupWidth =
+        widget.controller.popupWidth ??
+        (widget.controller.popupInitWidth * 1.8);
 
-    if (widget.controller.popupHeight != null) {
-      _popupHeight = widget.controller.popupHeight!;
-    } else {
-      _popupHeight = widget.controller.popupInitHeight;
-    }
+    _popupHeight =
+        widget.controller.popupHeight ?? widget.controller.popupInitHeight;
 
     // Ajouter les listeners pour la completion de texte
     widget.controller.textControleur.addListener(_onTextChanged);
     widget.controller.addListener(_refresh);
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChipTextCompletion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller.focusNode?.removeListener(_onFocusChange);
+      oldWidget.controller.textControleur.removeListener(_onTextChanged);
+      oldWidget.controller.removeListener(_refresh);
+
+      widget.controller.focusNode?.addListener(_onFocusChange);
+      widget.controller.textControleur.addListener(_onTextChanged);
+      widget.controller.addListener(_refresh);
+
+      if (widget.controller.popupWidth != null) {
+        _popupWidth = widget.controller.popupWidth!;
+      }
+      if (widget.controller.popupHeight != null) {
+        _popupHeight = widget.controller.popupHeight!;
+      }
+    }
   }
 
   @override
@@ -1120,7 +1137,7 @@ class ChipTextCompletionController<T extends SearchEntry>
     return results;
   }
 
-  List<Color> colorsBackground = [
+  final List<Color> _colorsBackground = [
     Colors.green.shade300,
     Colors.blue.shade300,
     Colors.pink.shade200,
@@ -1136,7 +1153,7 @@ class ChipTextCompletionController<T extends SearchEntry>
   ];
 
   Color getBgColor(int indice) {
-    return colorsBackground[indice % colorsBackground.length];
+    return _colorsBackground[indice % _colorsBackground.length];
   }
 
   List<T> _getNearestEntries({

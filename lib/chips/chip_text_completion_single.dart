@@ -42,6 +42,27 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   }
 
   @override
+  void didUpdateWidget(covariant ChipTextCompletionSingle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller.focusNode?.removeListener(_onFocusChange);
+      oldWidget.controller.textControleur.removeListener(_onTextChanged);
+      oldWidget.controller.removeListener(_refresh);
+
+      widget.controller.focusNode?.addListener(_onFocusChange);
+      widget.controller.textControleur.addListener(_onTextChanged);
+      widget.controller.addListener(_refresh);
+
+      if (widget.controller.popupWidth != null) {
+        _popupWidth = widget.controller.popupWidth!;
+      }
+      if (widget.controller.popupHeight != null) {
+        _popupHeight = widget.controller.popupHeight!;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     widget.controller.focusNode?.removeListener(_onFocusChange);
