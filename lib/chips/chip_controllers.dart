@@ -66,8 +66,29 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool alwaysDisplayed = false;
   bool required = false; // if true, the field is mandatory
-  double? chipWidth;
-  double? editingWidth;
+  double? _chipWidth;
+  double? get chipWidth => _chipWidth;
+  set chipWidth(double? value) {
+    assert(
+      !(value != null && expandable),
+      'Cannot set a fixed chipWidth when expandable is true',
+    );
+    _chipWidth = value;
+  }
+
+  double? _editingWidth;
+  double? get editingWidth => _editingWidth;
+  set editingWidth(double? value) {
+    assert(
+      !(value != null && expandable),
+      'Cannot set a fixed editingWidth when expandable is true',
+    );
+    _editingWidth = value;
+  }
+
+  /// The width measured at runtime when the chip is interactively updated
+  double? recordedWidth;
+
   double? _chipHeight;
   double get chipHeight => _chipHeight ?? chipHeightSize;
   set chipHeight(double value) => _chipHeight = value;
@@ -78,7 +99,17 @@ abstract class ChipItemController with ChangeNotifier {
   double chipHeightSize = 40;
 
   /// if true, the chip can be expanded to fill width of the parent widget
-  bool expandable = false;
+  bool _expandable = false;
+  bool get expandable => _expandable;
+  set expandable(bool value) {
+    if (value) {
+      assert(
+        chipWidth == null && editingWidth == null,
+        'Cannot set expandable to true when a fixed width is defined (chipWidth or editingWidth)',
+      );
+    }
+    _expandable = value;
+  }
 
   String name;
 

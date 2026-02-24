@@ -141,10 +141,10 @@ class _CombinedExampleState extends State<CombinedExample> {
           ..comments = "Autocompletion de clients"
           ..avatar = null*/
           ..singleMode = true
-          ..chipWidth = double.infinity
+          ..chipWidth = 200
           ..needSelectedItem = true
           ..required = true
-          ..minCharacterNeeded = 2
+          ..minCharacterNeeded = 0
           ..popupWidth = 250
           ..popupHeight = 300
           ..avatar = const Icon(
@@ -238,18 +238,16 @@ class _CombinedExampleState extends State<CombinedExample> {
             Row(
               mainAxisSize: .min,
               children: [
-                /*    Expanded(
+                Expanded(
                   child: Container(
                     color: Colors.yellow,
                     child: ChipTextCompletion(controller: _clientController),
                   ),
-                ),*/
-                Expanded(
-                  child: Container(
-                    //width: 200,
-                    color: Colors.green,
-                    child: ChipTextCompletion(controller: _clientController),
-                  ),
+                ),
+                Container(
+                  //width: 200,
+                  color: Colors.green,
+                  child: ChipTextCompletion(controller: _clientController),
                 ),
                 ElevatedButton(
                   onPressed: () {

@@ -34,7 +34,9 @@ class ChipDecorator extends StatelessWidget {
         actionButtons ?? _buildDefaultActionButtons(context);
 
     double? currentWidth = controller.updating
-        ? (controller.editingWidth ?? controller.chipWidth)
+        ? (controller.editingWidth ??
+              controller.chipWidth ??
+              controller.recordedWidth)
         : controller.chipWidth;
 
     Widget chipContent = InkWell(

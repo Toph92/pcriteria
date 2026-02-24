@@ -598,7 +598,7 @@ class _ChipListState extends State<ChipList> {
     final size = renderBox.size;
     widget.controller.chipX = position.dx;
     widget.controller.chipY = position.dy;
-    widget.controller.chipWidth = size.width;
+    widget.controller.recordedWidth = size.width;
     widget.controller.chipHeight = size.height;
   }
 

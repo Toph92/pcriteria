@@ -303,7 +303,7 @@ class _ChipRangeState extends State<ChipRange> {
     final size = renderBox.size;
     widget.controller.chipX = position.dx;
     widget.controller.chipY = position.dy;
-    widget.controller.chipWidth = size.width;
+    widget.controller.recordedWidth = size.width;
     widget.controller.chipHeight = size.height;
   }
 }
