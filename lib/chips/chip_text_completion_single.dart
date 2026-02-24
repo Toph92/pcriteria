@@ -405,30 +405,20 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
             widget.controller.focusNode?.requestFocus();
           }
         },
-        child: () {
-          final inputField = Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: TextFormField(
-              controller: widget.controller.textControleur,
-              focusNode: widget.controller.focusNode,
-              style: widget.controller.inputTextStyle,
-              decoration: InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                hintText: widget.controller.label,
-                hintStyle: widget.controller.emptyLabelStyle,
-              ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: TextFormField(
+            controller: widget.controller.textControleur,
+            focusNode: widget.controller.focusNode,
+            style: widget.controller.inputTextStyle,
+            decoration: InputDecoration(
+              isDense: true,
+              border: InputBorder.none,
+              hintText: widget.controller.label,
+              hintStyle: widget.controller.emptyLabelStyle,
             ),
-          );
-
-          if (widget.controller.editingWidth != null) {
-            return SizedBox(
-              width: widget.controller.editingWidth,
-              child: inputField,
-            );
-          }
-          return Expanded(child: inputField);
-        }(),
+          ),
+        ),
       ),
     );
   }

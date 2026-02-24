@@ -126,7 +126,7 @@ class _ChipRangeState extends State<ChipRange> {
               showWhenUnlinked: false,
               offset: Offset(
                 widget.controller.popupXoffset,
-                widget.controller.chipHeight ?? 0,
+                widget.controller.chipHeight,
               ),
               child: Material(
                 color: Colors.transparent,

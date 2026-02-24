@@ -1,11 +1,11 @@
 {
 	"files": [
 		{
-			"path": "lib/chips/chip_text_completion_single.dart",
+			"path": "examples/example2/lib/main.dart",
 			"bookmarks": [
 				{
-					"line": 365,
-					"column": 20,
+					"line": 143,
+					"column": 39,
 					"label": ""
 				}
 			]

@@ -26,7 +26,9 @@ mixin class CommonPages {
       ..chips = [
         ChipTextController(name: "compagny", group: gr1!, label: "Société")
           ..comments = "Raison sociale de la société"
-          ..avatar = const Icon(Icons.home, color: Colors.blue, size: 24),
+          ..avatar = const Icon(Icons.home, color: Colors.blue, size: 24)
+          ..chipWidth = 200,
+
         /*..labelStyle = const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,

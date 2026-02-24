@@ -307,7 +307,7 @@ class _ChipListState extends State<ChipList> {
               link: _layerLink,
               offset: Offset(
                 widget.controller.popupXoffset,
-                widget.controller.chipHeight ?? 0,
+                widget.controller.chipHeight,
               ),
               child: Material(
                 color: Colors.transparent,
@@ -352,7 +352,7 @@ class _ChipListState extends State<ChipList> {
           children: [
             CompositedTransformFollower(
               link: _layerLink,
-              offset: Offset(0, widget.controller.chipHeight ?? 0),
+              offset: Offset(0, widget.controller.chipHeight),
               child: Material(
                 color: Colors.transparent,
                 child: MouseRegion(

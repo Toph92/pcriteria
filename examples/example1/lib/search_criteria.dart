@@ -90,6 +90,7 @@ void initializeSearchCriteria() {
                 return (filteredUsers, null);
               },
         )
+        ..chipWidth = 500
         ..singleMode = true
         ..needSelectedItem = true
         ..required = true

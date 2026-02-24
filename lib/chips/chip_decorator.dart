@@ -33,6 +33,10 @@ class ChipDecorator extends StatelessWidget {
     final Widget? effectiveActionButtons =
         actionButtons ?? _buildDefaultActionButtons(context);
 
+    double? currentWidth = controller.updating
+        ? (controller.editingWidth ?? controller.chipWidth)
+        : controller.chipWidth;
+
     Widget chipContent = InkWell(
       //borderRadius: BorderRadius.circular(8.0),
       onTap: controller.disable ? null : onTap,
@@ -53,9 +57,12 @@ class ChipDecorator extends StatelessWidget {
           if (controller.chipType == ChipType.boolean && controller.expandable)
             const Expanded(child: SizedBox.shrink()),
 
-          if (controller.expandable && controller.chipType != ChipType.boolean)
-            Expanded(child: child),
-          if (!controller.expandable || controller.chipType == ChipType.boolean)
+          if ((controller.expandable ||
+                  currentWidth != null ||
+                  controller.updating) &&
+              controller.chipType != ChipType.boolean)
+            Expanded(child: child)
+          else
             child,
           const SizedBox(width: 2),
           if (effectiveActionButtons != null) effectiveActionButtons,
@@ -70,7 +77,8 @@ class ChipDecorator extends StatelessWidget {
         child: Opacity(
           opacity: controller.disable ? 0.5 : 1.0,
           child: SizedBox(
-            height: controller.chipHeightSize,
+            width: currentWidth,
+            height: controller.chipHeight,
             child: Padding(
               padding: const EdgeInsets.all(1.0),
               child: chipContent,
@@ -85,7 +93,8 @@ class ChipDecorator extends StatelessWidget {
       child: Opacity(
         opacity: controller.disable ? 0.5 : 1.0,
         child: SizedBox(
-          height: controller.chipHeightSize,
+          width: currentWidth,
+          height: controller.chipHeight,
           child: Padding(
             padding: const EdgeInsets.all(1.0),
             child: TitleBorderBox(

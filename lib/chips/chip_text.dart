@@ -51,27 +51,24 @@ class _ChipTextState extends State<ChipText> {
       },
       // actually if I remove the line "actionButtons: ...", it defaults to null.
       child: widget.controller.updating
-          ? SizedBox(
-              width: widget.controller.editingWidth,
-              child: TextField(
-                autofocus: true,
-                focusNode: widget.controller.focusNode,
-                controller: widget.controller.textControleur,
-                decoration: const InputDecoration(
-                  isDense: true,
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                ),
-                style: widget.controller.inputTextStyle,
-                inputFormatters: widget.controller.inputFormatters,
-                onChanged: (value) {
-                  widget.controller.displayed = value.isNotEmpty;
-                  if (mounted) setState(() {});
-                },
-                onSubmitted: (value) {
-                  widget.controller.onEnter?.call();
-                },
+          ? TextField(
+              autofocus: true,
+              focusNode: widget.controller.focusNode,
+              controller: widget.controller.textControleur,
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
               ),
+              style: widget.controller.inputTextStyle,
+              inputFormatters: widget.controller.inputFormatters,
+              onChanged: (value) {
+                widget.controller.displayed = value.isNotEmpty;
+                if (mounted) setState(() {});
+              },
+              onSubmitted: (value) {
+                widget.controller.onEnter?.call();
+              },
             )
           : widget.controller.textControleur.text.isNotEmpty
           ? Text(

@@ -66,7 +66,12 @@ abstract class ChipItemController with ChangeNotifier {
 
   bool alwaysDisplayed = false;
   bool required = false; // if true, the field is mandatory
+  double? chipWidth;
   double? editingWidth;
+  double? _chipHeight;
+  double get chipHeight => _chipHeight ?? chipHeightSize;
+  set chipHeight(double value) => _chipHeight = value;
+
   double? popupWidth;
   double? popupHeight;
 
@@ -472,8 +477,6 @@ mixin ChipsPoupAttributs {
   double popupMaxHeight = 1000;
   double? chipX;
   double? chipY;
-  double? chipWidth;
-  double? chipHeight;
 }
 
 mixin ChipsAssets {
