@@ -237,9 +237,15 @@ class _CombinedExampleState extends State<CombinedExample> {
             Row(
               mainAxisSize: .min,
               children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.yellow,
+                    child: ChipTextCompletion(controller: _clientController),
+                  ),
+                ),
                 Container(
-                  color: Colors.yellow,
-                  width: 300,
+                  width: 200,
+                  color: Colors.green,
                   child: ChipTextCompletion(controller: _clientController),
                 ),
                 ElevatedButton(
