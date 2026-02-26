@@ -254,33 +254,36 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
               separatorBuilder: (context, index) => const Divider(height: 3),
               itemBuilder: (context, index) {
                 final item = widget.controller.dataSourceFiltered![index];
-                return ListTile(
-                  horizontalTitleGap: 0,
-                  minLeadingWidth: 0,
-                  minVerticalPadding: 0,
-                  contentPadding: EdgeInsets.zero,
-                  visualDensity: const VisualDensity(
-                    vertical: -4,
-                    horizontal: -4,
+                return Material(
+                  color: item.backgroundColor ?? Colors.transparent,
+                  child: ListTile(
+                    horizontalTitleGap: 0,
+                    minLeadingWidth: 0,
+                    minVerticalPadding: 0,
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: const VisualDensity(
+                      vertical: -4,
+                      horizontal: -4,
+                    ),
+                    dense: true,
+                    hoverColor: item.hoverColor ?? Colors.yellow,
+                    title: item.displayInList(widget.controller),
+                    onTap: () {
+                      // Update text and selected items
+                      widget.controller.textControleur.text =
+                          item.displaySelected;
+                      widget.controller.selectedItems = [item];
+                      widget.controller.selectedFromList = true;
+
+                      widget.controller.onSelected?.call(
+                        widget.controller.selectedItems.cast<SearchEntry>()
+                            as dynamic,
+                      );
+
+                      _closeOverlayPopup();
+                      widget.controller.notify();
+                    },
                   ),
-                  dense: true,
-                  hoverColor: Colors.yellow,
-                  title: item.displayInList(widget.controller),
-                  onTap: () {
-                    // Update text and selected items
-                    widget.controller.textControleur.text =
-                        item.displaySelected;
-                    widget.controller.selectedItems = [item];
-                    widget.controller.selectedFromList = true;
-
-                    widget.controller.onSelected?.call(
-                      widget.controller.selectedItems.cast<SearchEntry>()
-                          as dynamic,
-                    );
-
-                    _closeOverlayPopup();
-                    widget.controller.notify();
-                  },
                 );
               },
             ),

@@ -412,7 +412,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
                     widget.controller.dataSourceFiltered?[index];
                 return item != null
                     ? Material(
-                        type: MaterialType.transparency,
+                        color: item.backgroundColor ?? Colors.transparent,
                         child: ListTile(
                           horizontalTitleGap: 0,
                           minLeadingWidth: 0,
@@ -423,7 +423,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
                             horizontal: -4,
                           ),
                           dense: true,
-                          hoverColor: Colors.yellow,
+                          hoverColor: item.hoverColor ?? Colors.yellow,
                           leading: item.fuzzySearchResult
                               ? Icon(
                                   Icons.help,
@@ -1295,6 +1295,8 @@ class SearchEntry {
     required String display,
     String? txtValue,
     this.hoverDescription,
+    this.backgroundColor,
+    this.hoverColor,
   }) {
     assert(sID.isNotEmpty, "sID cannot be empty");
     _sText = txtValue ?? '';
@@ -1338,6 +1340,8 @@ class SearchEntry {
   String? hoverDescription;
   String _sText = "";
   String sID;
+  final Color? backgroundColor;
+  final Color? hoverColor;
   List<String> _qB2 = [];
   List<String> _qB3 = [];
   List<String> _qB4 = [];
