@@ -104,6 +104,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   late double _popupHeight;
   final GlobalKey _wrapKey = GlobalKey();
   bool _isResizing = false;
+  bool _isScrolling = false;
 
   @override
   void dispose() {
@@ -175,6 +176,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
       if (_isResizing) return;
+      if (_isScrolling) return;
       if (!widget.controller.focusNode!.hasFocus) {
         if (widget.controller.popupDisplayed) {
           _closeOverlayPopup();
@@ -404,68 +406,79 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
         if (widget.controller.dataSourceFiltered != null &&
             widget.controller.dataSourceFiltered!.isNotEmpty)
           Expanded(
-            child: ListView.separated(
-              itemCount: widget.controller.dataSourceFiltered!.length,
-              separatorBuilder: (context, index) => const Divider(height: 3),
-              itemBuilder: (context, index) {
-                final SearchEntry? item =
-                    widget.controller.dataSourceFiltered?[index];
-                return item != null
-                    ? Material(
-                        color: item.backgroundColor ?? Colors.transparent,
-                        child: ListTile(
-                          horizontalTitleGap: 0,
-                          minLeadingWidth: 0,
-                          minVerticalPadding: 0,
-                          contentPadding: EdgeInsets.zero,
-                          visualDensity: const VisualDensity(
-                            vertical: -4,
-                            horizontal: -4,
-                          ),
-                          dense: true,
-                          hoverColor: item.hoverColor ?? Colors.yellow,
-                          leading: item.fuzzySearchResult
-                              ? Icon(
-                                  Icons.help,
-                                  size: 24,
-                                  color: Colors.blue.withValues(
-                                    alpha: ((item._fuzzyScore ?? 1.0) * 2)
-                                        .clamp(0.1, 1.0),
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.keyboard_arrow_right,
-                                  size: 24,
-                                  color: Colors.green,
-                                ),
-                          title: item.displayInList(widget.controller),
-                          onTap: () {
-                            widget.controller.selectedItems.add(item);
-                            widget.controller.onSelected?.call(
-                              widget.controller.selectedItems,
-                            );
-                            widget.controller.selectedFromList = true;
-                            if (widget.controller.keepPopupOpen &&
-                                widget.controller.selectedItems.length <
-                                    widget.controller.maxEntries) {
-                              widget.controller.instantMessage =
-                                  "Critère ajouté";
-                              _refresh();
-                              widget.controller.focusNode?.requestFocus();
-                            } else {
-                              _closeOverlayPopup();
-                            }
-                            widget.controller.dataSourceFiltered = null;
-                            widget.controller._arCriteria = null;
-                            widget.controller.textControleur.clear();
-                            widget.controller.updating = false;
-                            // Rafraîchir l'état du widget parent
-                            setState(() {});
-                          },
-                        ),
-                      )
-                    : const SizedBox(height: 0, width: 0);
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollStartNotification) {
+                  _isScrolling = true;
+                } else if (notification is ScrollEndNotification) {
+                  _isScrolling = false;
+                  widget.controller.focusNode?.requestFocus();
+                }
+                return false;
               },
+              child: ListView.separated(
+                itemCount: widget.controller.dataSourceFiltered!.length,
+                separatorBuilder: (context, index) => const Divider(height: 3),
+                itemBuilder: (context, index) {
+                  final SearchEntry? item =
+                      widget.controller.dataSourceFiltered?[index];
+                  return item != null
+                      ? Material(
+                          color: item.backgroundColor ?? Colors.transparent,
+                          child: ListTile(
+                            horizontalTitleGap: 0,
+                            minLeadingWidth: 0,
+                            minVerticalPadding: 0,
+                            contentPadding: EdgeInsets.zero,
+                            visualDensity: const VisualDensity(
+                              vertical: -4,
+                              horizontal: -4,
+                            ),
+                            dense: true,
+                            hoverColor: item.hoverColor ?? Colors.yellow,
+                            leading: item.fuzzySearchResult
+                                ? Icon(
+                                    Icons.help,
+                                    size: 24,
+                                    color: Colors.blue.withValues(
+                                      alpha: ((item._fuzzyScore ?? 1.0) * 2)
+                                          .clamp(0.1, 1.0),
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.keyboard_arrow_right,
+                                    size: 24,
+                                    color: Colors.green,
+                                  ),
+                            title: item.displayInList(widget.controller),
+                            onTap: () {
+                              widget.controller.selectedItems.add(item);
+                              widget.controller.onSelected?.call(
+                                widget.controller.selectedItems,
+                              );
+                              widget.controller.selectedFromList = true;
+                              if (widget.controller.keepPopupOpen &&
+                                  widget.controller.selectedItems.length <
+                                      widget.controller.maxEntries) {
+                                widget.controller.instantMessage =
+                                    "Critère ajouté";
+                                _refresh();
+                                widget.controller.focusNode?.requestFocus();
+                              } else {
+                                _closeOverlayPopup();
+                              }
+                              widget.controller.dataSourceFiltered = null;
+                              widget.controller._arCriteria = null;
+                              widget.controller.textControleur.clear();
+                              widget.controller.updating = false;
+                              // Rafraîchir l'état du widget parent
+                              setState(() {});
+                            },
+                          ),
+                        )
+                      : const SizedBox(height: 0, width: 0);
+                },
+              ),
             ),
           )
         else

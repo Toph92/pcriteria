@@ -25,6 +25,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
   late double _popupWidth;
   late double _popupHeight;
   bool _isResizing = false;
+  bool _isScrolling = false;
 
   @override
   void initState() {
@@ -80,6 +81,7 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
       if (_isResizing) return;
+      if (_isScrolling) return;
       if (!widget.controller.focusNode!.hasFocus) {
         if (widget.controller.popupDisplayed) {
           _closeOverlayPopup();
@@ -249,43 +251,54 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
         if (widget.controller.dataSourceFiltered != null &&
             widget.controller.dataSourceFiltered!.isNotEmpty)
           Expanded(
-            child: ListView.separated(
-              itemCount: widget.controller.dataSourceFiltered!.length,
-              separatorBuilder: (context, index) => const Divider(height: 3),
-              itemBuilder: (context, index) {
-                final item = widget.controller.dataSourceFiltered![index];
-                return Material(
-                  color: item.backgroundColor ?? Colors.transparent,
-                  child: ListTile(
-                    horizontalTitleGap: 0,
-                    minLeadingWidth: 0,
-                    minVerticalPadding: 0,
-                    contentPadding: EdgeInsets.zero,
-                    visualDensity: const VisualDensity(
-                      vertical: -4,
-                      horizontal: -4,
-                    ),
-                    dense: true,
-                    hoverColor: item.hoverColor ?? Colors.yellow,
-                    title: item.displayInList(widget.controller),
-                    onTap: () {
-                      // Update text and selected items
-                      widget.controller.textControleur.text =
-                          item.displaySelected;
-                      widget.controller.selectedItems = [item];
-                      widget.controller.selectedFromList = true;
-
-                      widget.controller.onSelected?.call(
-                        widget.controller.selectedItems.cast<SearchEntry>()
-                            as dynamic,
-                      );
-
-                      _closeOverlayPopup();
-                      widget.controller.notify();
-                    },
-                  ),
-                );
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollStartNotification) {
+                  _isScrolling = true;
+                } else if (notification is ScrollEndNotification) {
+                  _isScrolling = false;
+                  widget.controller.focusNode?.requestFocus();
+                }
+                return false;
               },
+              child: ListView.separated(
+                itemCount: widget.controller.dataSourceFiltered!.length,
+                separatorBuilder: (context, index) => const Divider(height: 3),
+                itemBuilder: (context, index) {
+                  final item = widget.controller.dataSourceFiltered![index];
+                  return Material(
+                    color: item.backgroundColor ?? Colors.transparent,
+                    child: ListTile(
+                      horizontalTitleGap: 0,
+                      minLeadingWidth: 0,
+                      minVerticalPadding: 0,
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: const VisualDensity(
+                        vertical: -4,
+                        horizontal: -4,
+                      ),
+                      dense: true,
+                      hoverColor: item.hoverColor ?? Colors.yellow,
+                      title: item.displayInList(widget.controller),
+                      onTap: () {
+                        // Update text and selected items
+                        widget.controller.textControleur.text =
+                            item.displaySelected;
+                        widget.controller.selectedItems = [item];
+                        widget.controller.selectedFromList = true;
+
+                        widget.controller.onSelected?.call(
+                          widget.controller.selectedItems.cast<SearchEntry>()
+                              as dynamic,
+                        );
+
+                        _closeOverlayPopup();
+                        widget.controller.notify();
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           )
         else

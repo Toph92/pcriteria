@@ -244,11 +244,11 @@ class _CombinedExampleState extends State<CombinedExample> {
                     child: ChipTextCompletion(controller: _clientController),
                   ),
                 ),
-                Container(
+                /*Container(
                   //width: 200,
                   color: Colors.green,
                   child: ChipTextCompletion(controller: _clientController),
-                ),
+                ),*/
                 ElevatedButton(
                   onPressed: () {
                     debugPrint(
