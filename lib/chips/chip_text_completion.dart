@@ -413,32 +413,8 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
                 return item != null
                     ? Material(
                         type: MaterialType.transparency,
-                        child: ListTile(
-                          horizontalTitleGap: 4,
-                          minLeadingWidth: 0,
-                          minVerticalPadding: 0,
-                          contentPadding: const EdgeInsets.only(
-                            left: 4,
-                            right: 4,
-                          ),
-                          visualDensity: const VisualDensity(vertical: -4),
-                          dense: true,
+                        child: InkWell(
                           hoverColor: Colors.yellow,
-                          leading: item.fuzzySearchResult
-                              ? Icon(
-                                  Icons.help,
-                                  size: 24,
-                                  color: Colors.blue.withValues(
-                                    alpha: ((item._fuzzyScore ?? 1.0) * 2)
-                                        .clamp(0.1, 1.0),
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.keyboard_arrow_right,
-                                  size: 24,
-                                  color: Colors.green,
-                                ),
-                          title: item.displayInList(widget.controller),
                           onTap: () {
                             widget.controller.selectedItems.add(item);
                             widget.controller.onSelected?.call(
@@ -462,6 +438,31 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
                             // Rafraîchir l'état du widget parent
                             setState(() {});
                           },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Row(
+                              children: [
+                                item.fuzzySearchResult
+                                    ? Icon(
+                                        Icons.help,
+                                        size: 24,
+                                        color: Colors.blue.withValues(
+                                          alpha: ((item._fuzzyScore ?? 1.0) * 2)
+                                              .clamp(0.1, 1.0),
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.keyboard_arrow_right,
+                                        size: 24,
+                                        color: Colors.green,
+                                      ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: item.displayInList(widget.controller),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       )
                     : const SizedBox(height: 0, width: 0);

@@ -254,12 +254,8 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
               separatorBuilder: (context, index) => const Divider(height: 3),
               itemBuilder: (context, index) {
                 final item = widget.controller.dataSourceFiltered![index];
-                return ListTile(
-                  horizontalTitleGap: 4,
-                  minLeadingWidth: 0,
-                  dense: true,
+                return InkWell(
                   hoverColor: Colors.yellow,
-                  title: item.displayInList(widget.controller),
                   onTap: () {
                     // Update text and selected items
                     widget.controller.textControleur.text =
@@ -275,6 +271,17 @@ class _ChipTextCompletionSingleState extends State<ChipTextCompletionSingle>
                     _closeOverlayPopup();
                     widget.controller.notify();
                   },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(child: item.displayInList(widget.controller)),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
