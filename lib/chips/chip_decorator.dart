@@ -59,9 +59,7 @@ class ChipDecorator extends StatelessWidget {
           if (controller.chipType == ChipType.boolean && controller.expandable)
             const Expanded(child: SizedBox.shrink()),
 
-          if ((controller.expandable ||
-                  currentWidth != null ||
-                  controller.updating) &&
+          if ((controller.expandable || currentWidth != null) &&
               controller.chipType != ChipType.boolean)
             Expanded(child: child)
           else
