@@ -527,6 +527,9 @@ mixin ChipsAssets {
     Function()? onErase,
     Function()? onDelete,
   }) {
+    if (controller.disable) {
+      return const SizedBox.shrink();
+    }
     if (onErase == null || onDelete == null) {
       if (controller.hasValue()) {
         return eraseIcon;

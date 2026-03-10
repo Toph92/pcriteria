@@ -599,7 +599,6 @@ class _ChipListState extends State<ChipList> {
     widget.controller.chipX = position.dx;
     widget.controller.chipY = position.dy;
     widget.controller.recordedWidth = size.width;
-    widget.controller.chipHeight = size.height;
   }
 
   Color gridBgColor(int index) {

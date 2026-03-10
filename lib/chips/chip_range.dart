@@ -66,7 +66,6 @@ class _ChipRangeState extends State<ChipRange> {
         key: _inputChipKey,
         controller: widget.controller,
         onTap: () {
-          _getInputChipPosition();
           widget.controller.updating = true;
           _showOverlayPopup(context);
         },
@@ -110,8 +109,6 @@ class _ChipRangeState extends State<ChipRange> {
   void _showOverlayPopup(BuildContext context) {
     _overlayEntryPopup?.remove();
     _overlayEntryPopup = null;
-
-    _getInputChipPosition();
 
     _overlayEntryPopup = OverlayEntry(
       builder: (context) => StatefulBuilder(
@@ -296,16 +293,6 @@ class _ChipRangeState extends State<ChipRange> {
     widget.controller.updating = false;
   }
 
-  void _getInputChipPosition() {
-    final RenderBox renderBox =
-        _inputChipKey.currentContext?.findRenderObject() as RenderBox;
-    final position = renderBox.localToGlobal(Offset.zero);
-    final size = renderBox.size;
-    widget.controller.chipX = position.dx;
-    widget.controller.chipY = position.dy;
-    widget.controller.recordedWidth = size.width;
-    widget.controller.chipHeight = size.height;
-  }
 }
 
 // Rest of the ChipRangeController and NumberInputFormatter classes remain unchanged...
@@ -326,7 +313,6 @@ class ChipRangeController extends ChipItemController with ChipsPoupAttributs {
 
     _focusEndNode = FocusNode()..addListener(_onFocusChange);
     _textEndControleur = TextEditingController();
-    chipHeight = 50;
   }
 
   List<TextInputFormatter> inputFormatters = [];

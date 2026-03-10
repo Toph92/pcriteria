@@ -99,6 +99,9 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
           style: IconButton.styleFrom(
             backgroundColor: Colors.green,
             foregroundColor: Colors.white,
+            minimumSize: const Size(40, 40),
+            padding: EdgeInsets.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
       ),

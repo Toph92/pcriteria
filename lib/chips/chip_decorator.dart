@@ -169,6 +169,9 @@ class ChipDecorator extends StatelessWidget {
     Function()? onErase,
     Function()? onDelete,
   }) {
+    if (controller.disable) {
+      return null;
+    }
     if (onErase == null || onDelete == null) {
       if (controller.hasValue()) {
         return _eraseIcon;
