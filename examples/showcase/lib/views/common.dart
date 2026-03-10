@@ -248,10 +248,12 @@ mixin class CommonPages {
           ..popupXoffset = 0.0,
 
         ChipDateController(
-          name: "constructDate",
-          group: gr3!,
-          label: "Construction après",
-        )..comments = "Exemple d'une date",
+            name: "constructDate",
+            group: gr3!,
+            label: "Construction après",
+          )
+          ..comments = "Exemple d'une date"
+          ..chipWidth = 160,
 
         ChipListController(
             name: "house",

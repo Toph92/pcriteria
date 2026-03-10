@@ -432,6 +432,18 @@ class _ChipListState extends State<ChipList> {
     );
   }
 
+  void _onSelectionChanged() {
+    if (!mounted) return;
+    widget.controller.recordedWidth = null;
+    setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.controller.updating) {
+        _getInputChipPosition();
+        widget.controller.notify();
+      }
+    });
+  }
+
   Widget _popupBody(StateSetter setState) {
     return Column(
       children: [
@@ -502,8 +514,7 @@ class _ChipListState extends State<ChipList> {
                       }
                     });
 
-                    // Mettre à jour l'état du widget parent
-                    this.setState(() {});
+                    _onSelectionChanged();
                     if (widget.controller.quitOnSelect == true) {
                       _closeOverlayPopup();
                     }
@@ -534,7 +545,7 @@ class _ChipListState extends State<ChipList> {
                     setState(() {
                       widget.controller.selectedItems.clear();
                     });
-                    this.setState(() {});
+                    _onSelectionChanged();
                   },
                   icon: const Icon(Icons.remove_done),
                 )
@@ -548,7 +559,7 @@ class _ChipListState extends State<ChipList> {
                         widget.controller.dataset,
                       );
                     });
-                    this.setState(() {});
+                    _onSelectionChanged();
                   },
                   icon: const Icon(Icons.done_all),
                 ),
@@ -592,8 +603,9 @@ class _ChipListState extends State<ChipList> {
   }
 
   void _getInputChipPosition() {
-    final RenderBox renderBox =
-        _inputChipKey.currentContext?.findRenderObject() as RenderBox;
+    final RenderBox? renderBox =
+        _inputChipKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
     final position = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;
     widget.controller.chipX = position.dx;
@@ -612,201 +624,6 @@ class _ChipListState extends State<ChipList> {
     } else {
       return Colors.blue.shade50;
     }
-  }
-
-  List<Widget> sanitizeChildren(List<Widget> children) {
-    return children.map((child) {
-      if (child is Spacer) {
-        return const SizedBox(width: 4);
-      }
-      if (child is Flexible) {
-        return child.child;
-      }
-      return child;
-    }).toList();
-  }
-
-  Widget displayResume({
-    required ChipListDisplayMode mode,
-    bool isHover = false,
-  }) {
-    List<Widget> items = [];
-    if ((mode == ChipListDisplayMode.quantity ||
-            widget.controller.selectedItems.length >
-                widget.controller.displayModeStepQty) &&
-        isHover == false) {
-      return Text(
-        "# ${widget.controller.selectedItems.length}",
-        style: widget.controller.textStyle,
-      );
-    } else if (mode == ChipListDisplayMode.shortDescription) {
-      items = widget.controller.selectedItems
-          .map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(right: 4),
-              child: Text(
-                item.shortText ?? item.text,
-                style: widget.controller.textStyle,
-              ),
-            ),
-          )
-          .toList();
-      return isHover
-          ? GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.controller.gridCols,
-                childAspectRatio: widget.controller.gridAspectRatio,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: gridBgColor(index),
-                  child: Align(
-                    alignment: widget.controller.gridAlign,
-                    child: items[index],
-                  ),
-                );
-              },
-            )
-          : Wrap(spacing: 4, runSpacing: 4, children: items);
-    } else if (mode == ChipListDisplayMode.fullDescription) {
-      items = widget.controller.selectedItems
-          .map(
-            (item) => item.children == null
-                ? Text(item.text, style: widget.controller.textStyle)
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: sanitizeChildren(item.children!),
-                  ),
-          )
-          .toList();
-      return isHover
-          ? GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.controller.gridCols,
-                childAspectRatio: widget.controller.gridAspectRatio,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: gridBgColor(index),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Align(
-                      alignment: widget.controller.gridAlign,
-                      child: items[index],
-                    ),
-                  ),
-                );
-              },
-            ) //Wrap(direction: Axis.vertical, spacing: 0, children: items)
-          : Wrap(spacing: 4, children: items);
-    } else if (mode == ChipListDisplayMode.icon) {
-      items = widget.controller.selectedItems
-          .map((item) => item.leading ?? const Icon(Icons.question_mark))
-          .toList();
-      return isHover
-          ? GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.controller.gridCols,
-                childAspectRatio: widget.controller.gridAspectRatio,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: gridBgColor(index),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Align(
-                        alignment: widget.controller.gridAlign,
-                        child: items[index],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            )
-          : Wrap(spacing: 4, runSpacing: 4, children: items);
-    } else if (mode == ChipListDisplayMode.iconAndShortDescription) {
-      items = widget.controller.selectedItems
-          .map(
-            (item) => Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                item.leading ?? const Icon(Icons.question_mark),
-                Text(item.shortText ?? item.text),
-
-                const SizedBox(width: 4),
-              ],
-            ),
-          )
-          .toList();
-      return isHover
-          ? GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.controller.gridCols,
-                childAspectRatio: widget.controller.gridAspectRatio,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: gridBgColor(index),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Align(
-                      alignment: widget.controller.gridAlign,
-                      child: items[index],
-                    ),
-                  ),
-                );
-              },
-            )
-          : Wrap(spacing: 4, runSpacing: 4, children: items);
-    } else if (mode == ChipListDisplayMode.iconAndDescription) {
-      items = widget.controller.selectedItems
-          .map(
-            (item) => Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                item.leading ?? const Icon(Icons.question_mark),
-                item.children == null
-                    ? Text(item.text, style: widget.controller.textStyle)
-                    : Row(children: sanitizeChildren(item.children!)),
-                const SizedBox(width: 4),
-              ],
-            ),
-          )
-          .toList();
-      return isHover
-          ? GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.controller.gridCols,
-                childAspectRatio: widget.controller.gridAspectRatio,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: gridBgColor(index),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Align(
-                      alignment: widget.controller.gridAlign,
-                      child: items[index],
-                    ),
-                  ),
-                );
-              },
-            )
-          : Wrap(spacing: 4, runSpacing: 4, children: items);
-    }
-    return const SizedBox.shrink();
   }
 }
 
