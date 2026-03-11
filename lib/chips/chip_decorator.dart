@@ -39,14 +39,16 @@ class ChipDecorator extends StatelessWidget {
               controller.recordedWidth)
         : controller.chipWidth;
 
-    List<Widget> content = [
+    List<Widget> headerContent = [
       // Avatar/icône
       if (!controller.hideAvatar && controller.avatar != null)
         Tooltip(message: controller.comments ?? '', child: controller.avatar),
       const SizedBox(width: 2),
       if (controller.chipType == ChipType.boolean)
         Text(controller.label, style: controller.labelStyle),
+    ];
 
+    List<Widget> content = [
       // Contenu principal
       if (controller.chipType == ChipType.boolean && controller.expandable)
         const Expanded(child: SizedBox.shrink()),
@@ -59,25 +61,38 @@ class ChipDecorator extends StatelessWidget {
             : Expanded(child: child)
       else
         child,
+    ];
+
+    List<Widget> endContent = [
       const SizedBox(width: 2),
       if (effectiveActionButtons != null) effectiveActionButtons,
       if (effectiveActionButtons == null) const SizedBox(width: 10),
     ];
+
     Widget chipContent = InkWell(
       //borderRadius: BorderRadius.circular(8.0),
       onTap: controller.disable ? null : onTap,
       child:
           (controller.chipType == ChipType.textCompletion &&
               controller.singleMode == false)
-          ? Align(
-              alignment: Alignment.centerLeft,
-              widthFactor: 1.0,
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: content,
-              ),
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ...headerContent,
+                Flexible(
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: content,
+                  ),
+                ),
+                ...endContent,
+              ],
             )
-          : Row(mainAxisSize: MainAxisSize.min, children: content),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [...headerContent, ...content, ...endContent],
+            ),
     );
 
     if (controller.removeBorder) {
