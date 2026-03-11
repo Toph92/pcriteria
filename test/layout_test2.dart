@@ -11,7 +11,7 @@ void main() {
               Container(
                 color: Colors.yellow, // This creates _RenderColoredBox
                 width: double.infinity, // This creates RenderConstrainedBox
-                child: SizedBox(), // Dummy child
+                child: const SizedBox(), // Dummy child
               )
             ]
           )

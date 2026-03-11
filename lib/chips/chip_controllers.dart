@@ -206,6 +206,8 @@ abstract class ChipItemController with ChangeNotifier {
     }
   }
 
+  bool get singleMode => false;
+
   Icon popupIcon = const Icon(Icons.search);
   dynamic Function(BuildContext context, {dynamic other})? onPopupPressed;
   String tooltipMessagePopup = "Open search popup";

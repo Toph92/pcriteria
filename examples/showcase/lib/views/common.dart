@@ -253,7 +253,7 @@ mixin class CommonPages {
             label: "Construction après",
           )
           ..comments = "Exemple d'une date"
-          ..chipWidth = 160,
+          ..chipWidth = 220,
 
         ChipListController(
             name: "house",

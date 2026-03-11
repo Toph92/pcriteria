@@ -23,5 +23,15 @@
             "cwd": "examples/example2",
             "program": "lib/main.dart"
         }
+    ],
+    "compounds": [
+        {
+            "name": "All Examples",
+            "configurations": [
+                "Showcase",
+                "Example1",
+                "Example2"
+            ]
+        }
     ]
 }

@@ -39,36 +39,45 @@ class ChipDecorator extends StatelessWidget {
               controller.recordedWidth)
         : controller.chipWidth;
 
+    List<Widget> content = [
+      // Avatar/icône
+      if (!controller.hideAvatar && controller.avatar != null)
+        Tooltip(message: controller.comments ?? '', child: controller.avatar),
+      const SizedBox(width: 2),
+      if (controller.chipType == ChipType.boolean)
+        Text(controller.label, style: controller.labelStyle),
+
+      // Contenu principal
+      if (controller.chipType == ChipType.boolean && controller.expandable)
+        const Expanded(child: SizedBox.shrink()),
+
+      if ((controller.expandable || currentWidth != null) &&
+          controller.chipType != ChipType.boolean)
+        (controller.chipType == ChipType.textCompletion &&
+                controller.singleMode == false)
+            ? child
+            : Expanded(child: child)
+      else
+        child,
+      const SizedBox(width: 2),
+      if (effectiveActionButtons != null) effectiveActionButtons,
+      if (effectiveActionButtons == null) const SizedBox(width: 10),
+    ];
     Widget chipContent = InkWell(
       //borderRadius: BorderRadius.circular(8.0),
       onTap: controller.disable ? null : onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Avatar/icône
-          if (!controller.hideAvatar && controller.avatar != null)
-            Tooltip(
-              message: controller.comments ?? '',
-              child: controller.avatar,
-            ),
-          const SizedBox(width: 2),
-          if (controller.chipType == ChipType.boolean)
-            Text(controller.label, style: controller.labelStyle),
-
-          // Contenu principal
-          if (controller.chipType == ChipType.boolean && controller.expandable)
-            const Expanded(child: SizedBox.shrink()),
-
-          if ((controller.expandable || currentWidth != null) &&
-              controller.chipType != ChipType.boolean)
-            Expanded(child: child)
-          else
-            child,
-          const SizedBox(width: 2),
-          if (effectiveActionButtons != null) effectiveActionButtons,
-          if (effectiveActionButtons == null) const SizedBox(width: 10),
-        ],
-      ),
+      child:
+          (controller.chipType == ChipType.textCompletion &&
+              controller.singleMode == false)
+          ? Align(
+              alignment: Alignment.centerLeft,
+              widthFactor: 1.0,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: content,
+              ),
+            )
+          : Row(mainAxisSize: MainAxisSize.min, children: content),
     );
 
     if (controller.removeBorder) {
@@ -76,12 +85,18 @@ class ChipDecorator extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 2.0),
         child: Opacity(
           opacity: controller.disable ? 0.5 : 1.0,
-          child: SizedBox(
-            width: currentWidth,
-            height: controller.chipHeight,
-            child: Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: chipContent,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: 1.0,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: controller.chipHeight,
+                maxWidth: currentWidth ?? double.infinity,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: chipContent,
+              ),
             ),
           ),
         ),
@@ -92,30 +107,36 @@ class ChipDecorator extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 2.0),
       child: Opacity(
         opacity: controller.disable ? 0.5 : 1.0,
-        child: SizedBox(
-          width: currentWidth,
-          height: controller.chipHeight,
-          child: Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: TitleBorderBox(
-              title:
-                  ((controller.updating || controller.hasValue()) &&
-                          !controller.hideLabelIfNotEmpty) &&
-                      (controller.chipType != ChipType.boolean)
-                  ? controller.label
-                  : null,
-              titleStyle: controller.labelStyle.copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          widthFactor: 1.0,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: controller.chipHeight,
+              maxWidth: currentWidth ?? double.infinity,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: TitleBorderBox(
+                title:
+                    ((controller.updating || controller.hasValue()) &&
+                            !controller.hideLabelIfNotEmpty) &&
+                        (controller.chipType != ChipType.boolean)
+                    ? controller.label
+                    : null,
+                titleStyle: controller.labelStyle.copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                contentPadding: const EdgeInsets.only(left: 4),
+                backgroundColor: controller.disable
+                    ? Colors.grey.shade300
+                    : controller.backgroundColor,
+                borderColor: controller.hasError
+                    ? Colors.red
+                    : Colors.grey.shade700,
+                child: chipContent,
               ),
-              contentPadding: const EdgeInsets.only(left: 4),
-              backgroundColor: controller.disable
-                  ? Colors.grey.shade300
-                  : controller.backgroundColor,
-              borderColor: controller.hasError
-                  ? Colors.red
-                  : Colors.grey.shade700,
-              child: chipContent,
             ),
           ),
         ),

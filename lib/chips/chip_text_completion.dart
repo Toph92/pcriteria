@@ -791,7 +791,7 @@ class _ChipTextCompletionMultiState extends State<_ChipTextCompletionMulti>
   Widget _displayChips() {
     return Wrap(
       key: _wrapKey,
-      //crossAxisAlignment: WrapCrossAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 4.0,
       children: [
         if (widget.controller.selectedItems.isNotEmpty)

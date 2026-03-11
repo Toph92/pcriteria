@@ -14,7 +14,7 @@ void main() {
                   Expanded(
                     child: Container(
                       color: Colors.yellow,
-                      child: Text("Hello"),
+                      child: const Text("Hello"),
                     ),
                   )
                 ]

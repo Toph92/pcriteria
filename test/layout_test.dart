@@ -7,9 +7,9 @@ void main() {
       home: Scaffold(
         body: Row(
           children: [
-            Container(
+            const SizedBox(
               width: double.infinity, // This will throw an error
-              child: Text("Hello"),
+              child: const Text("Hello"),
             )
           ]
         )
