@@ -55,15 +55,11 @@ class ChipBooleanController extends ChipItemController {
     super.chipType = ChipType.boolean,
     super.onEnter,
   }) {
-    _focusNode = FocusNode()..addListener(_onFocusChange);
+    focusNode = FocusNode()..addListener(_onFocusChange);
     displayEraseButton = false;
   }
 
   bool _value = false;
-
-  late final FocusNode _focusNode;
-  @override
-  FocusNode get focusNode => _focusNode;
 
   TextStyle textStyle = const TextStyle(
     fontSize: 14,
@@ -73,7 +69,7 @@ class ChipBooleanController extends ChipItemController {
   Color checkColor = Colors.grey.shade800;
 
   void _onFocusChange() {
-    if (!_focusNode.hasFocus) {
+    if (focusNode != null && !focusNode!.hasFocus) {
       updating = false;
       notifyListeners();
     }
@@ -81,7 +77,6 @@ class ChipBooleanController extends ChipItemController {
 
   @override
   void dispose() {
-    _focusNode.dispose();
     super.dispose();
   }
 
