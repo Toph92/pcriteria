@@ -6,11 +6,15 @@ class ChipAdd extends StatefulWidget {
   const ChipAdd({
     required this.controller,
     required this.groupsFilterSelector,
+    this.icon = const Icon(Icons.add),
+    this.iconStyle,
     super.key,
   });
 
   final ChipsController controller;
   final List<ChipGroup>? groupsFilterSelector;
+  final Widget icon;
+  final ButtonStyle? iconStyle;
   @override
   State<ChipAdd> createState() => _ChipAddState();
 }
@@ -95,14 +99,15 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
               _showOverlayPopup();
             }
           },
-          icon: const Icon(Icons.add),
-          style: IconButton.styleFrom(
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(40, 40),
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
+          icon: widget.icon,
+          style:
+              widget.iconStyle ??
+              IconButton.styleFrom(
+                backgroundColor: Colors.grey,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(24, 24),
+                padding: const EdgeInsets.all(8),
+              ),
         ),
       ),
     );

@@ -41,6 +41,8 @@ class ChipsCriteria extends StatefulWidget {
     this.groupsFilterDisplay,
     this.groupsFilterSelector,
     this.showEraseAllButton = true,
+    this.iconAdd = const Icon(Icons.tune),
+    this.iconAddStyle,
   });
 
   final String? title;
@@ -55,6 +57,8 @@ class ChipsCriteria extends StatefulWidget {
   final TextStyle titleStyle;
   final Color backgroundColor;
   final Color borderColor;
+  final Widget iconAdd;
+  final ButtonStyle? iconAddStyle;
 
   @override
   State<ChipsCriteria> createState() => _ChipsCriteriaState();
@@ -135,6 +139,8 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
       body = ChipAdd(
         controller: widget.chipsListControllers,
         groupsFilterSelector: widget.groupsFilterSelector,
+        icon: widget.iconAdd,
+        iconStyle: widget.iconAddStyle,
       );
     } else if (widget.chipDisplayMode.contains(ChipDisplayMode.criteriaOnly)) {
       body = _wdWrapListCriteria();
@@ -149,6 +155,8 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                     body = ChipAdd(
                       controller: widget.chipsListControllers,
                       groupsFilterSelector: widget.groupsFilterSelector,
+                      icon: widget.iconAdd,
+                      iconStyle: widget.iconAddStyle,
                     ),
                     if (widget.showEraseAllButton &&
                         _wrapHeight > 80 &&
@@ -235,6 +243,8 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
                       //key: const Key("chip_add"),
                       controller: widget.chipsListControllers,
                       groupsFilterSelector: widget.groupsFilterSelector,
+                      icon: widget.iconAdd,
+                      iconStyle: widget.iconAddStyle,
                     ),
                     _separatorAndHelper(),
                   ],
