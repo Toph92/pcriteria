@@ -48,6 +48,12 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   }
 
   @override
+  void didUpdateWidget(ChipAdd oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    initChips();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return OverlayPortal.overlayChildLayoutBuilder(
       controller: _overlayPortalController,
