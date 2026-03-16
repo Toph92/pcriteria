@@ -56,7 +56,7 @@ abstract class ChipItemController with ChangeNotifier {
   ChipGroup? group;
 
   bool _displayed = false;
-  bool get displayed => (alwaysDisplayed || required) ? true : _displayed;
+  bool get displayed => (alwaysDisplayed || required || updating) ? true : _displayed;
   set displayed(bool value) {
     if (value != _displayed) {
       _displayed = value;
