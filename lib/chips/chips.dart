@@ -145,113 +145,74 @@ class _ChipsCriteriaState extends State<ChipsCriteria>
     } else if (widget.chipDisplayMode.contains(ChipDisplayMode.criteriaOnly)) {
       body = _wdWrapListCriteria();
     } else {
-      body ??= OS.isDesktop(desktopMode) || OS.isWeb()
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      Widget content;
+      if (OS.isDesktop(desktopMode) || OS.isWeb()) {
+        content = Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    body = ChipAdd(
-                      controller: widget.chipsListControllers,
-                      groupsFilterSelector: widget.groupsFilterSelector,
-                      icon: widget.iconAdd,
-                      iconStyle: widget.iconAddStyle,
-                    ),
-                    if (widget.showEraseAllButton &&
-                        _wrapHeight > 80 &&
-                        _chips.where((e) => e.hasValue()).isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: IconButton.filled(
-                          tooltip: widget
-                              .chipsListControllers
-                              .eraseAllCriteriaTooltipMessage,
-                          key: _btnEraseKey,
-                          onPressed: () {
-                            setState(() {
-                              for (final element
-                                  in widget.chipsListControllers.chips) {
-                                element.clean();
-                              }
-                            });
-                          },
-                          icon: const Icon(Icons.recycling),
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.grey,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
+                ChipAdd(
+                  controller: widget.chipsListControllers,
+                  groupsFilterSelector: widget.groupsFilterSelector,
+                  icon: widget.iconAdd,
+                  iconStyle: widget.iconAddStyle,
+                ),
+                if (widget.showEraseAllButton &&
+                    _wrapHeight > 80 &&
+                    _chips.where((e) => e.hasValue()).isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: IconButton.filled(
+                      tooltip: widget
+                          .chipsListControllers
+                          .eraseAllCriteriaTooltipMessage,
+                      key: _btnEraseKey,
+                      onPressed: () {
+                        setState(() {
+                          for (final element
+                              in widget.chipsListControllers.chips) {
+                            element.clean();
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.recycling),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        foregroundColor: Colors.white,
                       ),
-                    /* Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.orange.shade50,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              setState(() {
-                                for (final element
-                                    in widget.chipsListControllers.chips) {
-                                  element.clean();
-                                }
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.orange.shade300,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.refresh,
-                                color: Colors.orange.shade600,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),*/
-                  ],
+                    ),
+                  ),
+              ],
+            ),
+            _separatorAndHelper(),
+            Expanded(child: _wdWrapListCriteria()),
+          ],
+        );
+      } else {
+        content = Wrap(
+          key: _wrapKey,
+          runSpacing: 2,
+          spacing: 4,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ChipAdd(
+                  controller: widget.chipsListControllers,
+                  groupsFilterSelector: widget.groupsFilterSelector,
+                  icon: widget.iconAdd,
+                  iconStyle: widget.iconAddStyle,
                 ),
                 _separatorAndHelper(),
-                Expanded(child: _wdWrapListCriteria()),
               ],
-            )
-          : Wrap(
-              key: _wrapKey,
-              runSpacing: 2,
-              spacing: 4,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    body = ChipAdd(
-                      //key: const Key("chip_add"),
-                      controller: widget.chipsListControllers,
-                      groupsFilterSelector: widget.groupsFilterSelector,
-                      icon: widget.iconAdd,
-                      iconStyle: widget.iconAddStyle,
-                    ),
-                    _separatorAndHelper(),
-                  ],
-                ),
-                ..._listChips(),
-              ],
-            );
+            ),
+            ..._listChips(),
+          ],
+        );
+      }
+      body = content;
     }
 
     if (widget.chipDisplayMode.contains(ChipDisplayMode.withTileBorder)) {

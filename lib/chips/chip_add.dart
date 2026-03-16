@@ -120,30 +120,36 @@ class _ChipAddState extends State<ChipAdd> with ChipsAssets {
   }
 
   void initChips() {
-    // Standalone chips are now allowed.
+    _chips.clear();
+    groups.clear();
 
+    // Standalone chips are now allowed.
     _groupsNameFilterSelector =
         widget.groupsFilterSelector?.map((e) => e.name).toList() ?? [];
-    _chips
-      ..addAll(
-        widget.controller.chips.where(
-          (e) =>
-              e.group == null ||
+
+    final Set<ChipItemController> uniqueChips = {};
+    for (final e in widget.controller.chips) {
+      if ((e.group == null ||
               _groupsNameFilterSelector.contains(e.group!.name) ||
-              _groupsNameFilterSelector.isEmpty,
-        ),
-      )
-      ..sort((a, b) {
-        if (a.group == b.group) {
-          return a.order.compareTo(b.order);
-        }
-        if (a.group == null) return 1; // Standalone at the end
-        if (b.group == null) return -1;
-        return a.group!.order.compareTo(b.group!.order);
-      });
+              _groupsNameFilterSelector.isEmpty) &&
+          uniqueChips.add(e)) {
+        _chips.add(e);
+      }
+    }
+
+    _chips.sort((a, b) {
+      if (a.group == b.group) {
+        return a.order.compareTo(b.order);
+      }
+      if (a.group == null) return 1; // Standalone at the end
+      if (b.group == null) return -1;
+      return a.group!.order.compareTo(b.group!.order);
+    });
 
     for (final element in _chips) {
-      element.key_ ??= GlobalKey();
+      // Ensure the key is unique and not currently in use by another widget
+      // if possible, but for now just ensure it's set once per controller.
+      element.key_ ??= GlobalKey(debugLabel: 'chip_${element.name}');
       if (element.group != null && !groups.contains(element.group)) {
         groups.add(element.group!);
       }
