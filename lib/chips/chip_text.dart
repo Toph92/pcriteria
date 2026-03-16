@@ -70,6 +70,10 @@ class _ChipTextState extends State<ChipText> {
                 inputFormatters: widget.controller.inputFormatters,
                 onChanged: (value) {
                   widget.controller.displayed = value.isNotEmpty;
+                  if (value.isEmpty ||
+                      value.length >= widget.controller.minCharacterNeeded) {
+                    widget.controller.notify();
+                  }
                   if (mounted) setState(() {});
                 },
                 onSubmitted: (value) {
@@ -103,12 +107,14 @@ class ChipTextController extends ChipItemController {
     super.avatar = const Icon(Icons.abc, size: 24),
     super.chipType = ChipType.text,
     super.onEnter,
+    this.minCharacterNeeded = 0,
   }) {
     focusNode = FocusNode()..addListener(_onFocusChange);
     _textController = TextEditingController();
   }
 
   List<TextInputFormatter> inputFormatters = [];
+  int minCharacterNeeded;
 
   late final TextEditingController _textController;
   TextEditingController get textControleur => _textController;
