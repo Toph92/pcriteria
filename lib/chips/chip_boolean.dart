@@ -76,11 +76,6 @@ class ChipBooleanController extends ChipItemController {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   bool hasValue() {
     return _value;
   }

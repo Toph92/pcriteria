@@ -1,10 +1,12 @@
 import 'package:criteria/chips/chip_controllers.dart';
 import 'package:criteria/chips/chip_decorator.dart';
 import 'package:criteria/chips/chip_text_completion_single.dart';
+import 'package:criteria/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+export 'package:criteria/utils/string_extensions.dart';
 export 'package:flutter/services.dart';
 
 class CacheItem<T> {
@@ -902,6 +904,7 @@ class ChipTextCompletionController<T extends SearchEntry>
   int maxEntries = 1;
 
   /// Mode texte simple (sans chips)
+  @override
   bool singleMode = false;
 
   /// Need selected item
@@ -1405,27 +1408,4 @@ class SearchEntry {
   }
 }
 
-extension RemoveAccentsExtension on String {
-  String removeAccents() {
-    return replaceAll(RegExp(r'[àáâãäå]'), 'a')
-        .replaceAll(RegExp(r'[èéêë]'), 'e')
-        .replaceAll(RegExp(r'[ìíîï]'), 'i')
-        .replaceAll(RegExp(r'[òóôõö]'), 'o')
-        .replaceAll(RegExp(r'[ùúûü]'), 'u')
-        .replaceAll(RegExp(r'[ýÿ]'), 'y')
-        .replaceAll(RegExp(r'[ÀÁÂÃÄÅ]'), 'A')
-        .replaceAll(RegExp(r'[ÈÉÊË]'), 'E')
-        .replaceAll(RegExp(r'[ÌÍÎÏ]'), 'I')
-        .replaceAll(RegExp(r'[ÒÓÔÕÖ]'), 'O')
-        .replaceAll(RegExp(r'[ÙÚÛÜ]'), 'U')
-        .replaceAll(RegExp(r'[Ý]'), 'Y');
-  }
-
-  bool containsAny(List<String> keywords) {
-    return keywords.any((keyword) => contains(keyword));
-  }
-
-  bool containsAll(List<String> keywords) {
-    return keywords.every((keyword) => contains(keyword));
-  }
-}
+// end of file

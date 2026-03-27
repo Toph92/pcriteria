@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toolbox/toolbox.dart';
 
+export 'package:criteria/utils/string_extensions.dart';
 export 'chip_add.dart';
 export 'chip_boolean.dart';
 export 'chip_controllers.dart';

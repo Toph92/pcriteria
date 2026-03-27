@@ -3,13 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('Test layout', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: Scaffold(
         body: Row(
           children: [
-            const SizedBox(
+            SizedBox(
               width: double.infinity, // This will throw an error
-              child: const Text("Hello"),
+              child: Text("Hello"),
             )
           ]
         )

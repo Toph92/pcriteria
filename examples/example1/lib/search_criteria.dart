@@ -30,12 +30,12 @@ void initializeSearchCriteria() {
                   return (staticUsers, null);
                 }
 
-                final searchTerm = criteria.first.toLowerCase();
+                final searchTerm = criteria.first.toSearchable();
                 final filteredUsers = staticUsers.where((user) {
-                  final fullName = "${user.lastName} ${user.firstName ?? ''}"
-                      .toLowerCase();
+                  final fullName =
+                      "${user.lastName} ${user.firstName ?? ''}".toSearchable();
                   return fullName.contains(searchTerm) ||
-                      user.initials.toLowerCase().contains(searchTerm);
+                      user.initials.toSearchable().contains(searchTerm);
                 }).toList();
 
                 return (filteredUsers, null);
@@ -80,10 +80,10 @@ void initializeSearchCriteria() {
                   return (staticUsers, null);
                 }
 
-                final searchTerm = criteria.first.toLowerCase();
+                final searchTerm = criteria.first.toSearchable();
                 final filteredUsers = staticUsers.where((user) {
-                  final fullName = "${user.lastName} ${user.firstName ?? ''}"
-                      .toLowerCase();
+                  final fullName =
+                      "${user.lastName} ${user.firstName ?? ''}".toSearchable();
                   return fullName.contains(searchTerm);
                 }).toList();
 

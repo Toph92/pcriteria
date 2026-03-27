@@ -65,8 +65,7 @@ class ChipDecorator extends StatelessWidget {
 
     List<Widget> endContent = [
       const SizedBox(width: 2),
-      if (effectiveActionButtons != null) effectiveActionButtons,
-      if (effectiveActionButtons == null) const SizedBox(width: 10),
+      effectiveActionButtons ?? const SizedBox(width: 10),
     ];
 
     Widget chipContent = InkWell(
@@ -77,7 +76,6 @@ class ChipDecorator extends StatelessWidget {
               controller.singleMode == false)
           ? Row(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ...headerContent,
                 Flexible(
