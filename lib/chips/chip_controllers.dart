@@ -257,7 +257,7 @@ abstract class ChipItemController with ChangeNotifier {
     displayed = mappedByName[name]?['displayed'];
     switch (chipType) {
       case ChipType.textCompletion:
-        value = (mappedByName[name]?['value'] as List<dynamic>)
+        value = ((mappedByName[name]?['value'] as List<dynamic>?) ?? [])
             .map(
               (e) => SearchEntry(
                 display: e['displayedValue'] ?? '',
@@ -429,20 +429,21 @@ class ChipsController with ChipsPoupAttributs, ChangeNotifier {
 
   /// true on success
   bool fromJson(List<Map<String, dynamic>> jsonList) {
-    try {
-      final Map<String, Map<String, dynamic>> mappedByName = {
-        for (final item in jsonList) item['name']: item,
-      };
-      for (final ChipItemController chip in chips) {
-        if (chip.name == mappedByName[chip.name]?['name']) {
+    final Map<String, Map<String, dynamic>> mappedByName = {
+      for (final item in jsonList) item['name']: item,
+    };
+    bool allSucceeded = true;
+    for (final ChipItemController chip in chips) {
+      if (chip.name == mappedByName[chip.name]?['name']) {
+        try {
           chip.fromJson(jsonList);
+        } catch (e) {
+          debugPrint("Erreur fromJson pour ${chip.name}: $e");
+          allSucceeded = false;
         }
       }
-      return true;
-    } catch (e) {
-      debugPrint("Erreur fromJson: $e");
-      return false;
     }
+    return allSucceeded;
   }
 
   Future<void> loadCriteria({String? withKey, String? fromJsonString}) async {
